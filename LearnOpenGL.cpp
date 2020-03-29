@@ -13,16 +13,20 @@ const auto scr_height = 800;
 
 const auto vertexShaderSource = "#version 330 core\n"
 	"layout (location = 0) in vec3 aPos;\n"
+	"layout (location = 1) in vec3 aColor;\n"
+	"out vec3 ourColor;\n"
 	"void main()\n"
 	"{\n"
-	"	gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.f);\n"
+	"	gl_Position = vec4(aPos, 1.f);\n"
+	"	ourColor = aColor;"
 	"}\0";
 
 const auto fragmentShaderSource = "#version 330 core\n"
 	"out vec4 FragColor;\n"
+	"in vec3 ourColor;\n"
 	"void main()\n"
 	"{\n"
-	"	FragColor = vec4(1.f, 0.5f, 0.2f, 1.f);\n"
+	"	FragColor = vec4(ourColor, 1.f);\n"
 	"}\n\0";
 
 int main()
@@ -127,25 +131,17 @@ int main()
 	/* set up vertex data (and buffer(s)) and configure vertex attributes */
 	// ------------------------------
 	float vertices[] = {
-		0.5f, 0.5f, 0.f, /* top right */
-		0.5f, -0.5f, 0.f, /*  bottom right */
-		-0.5f, -0.5f, 0.f, /* bottom left */
-		-0.5f, 0.5f, 0.f /* top left */
+		/* positions */ /* colors */
+		0.5f, -0.5f, 0.f, 1.f, 0.f, 0.f, /* bottom right */
+		-0.5f, -0.5f, 0.f, 0.f, 1.f, 0.f, /* bottom left */
+		0.f, 0.5f, 0.f, 0.f, 0.f, 1.f /* top  */
 	};
 
-	unsigned int indices[] = {
-		/* note that we start from 0! */
-		0, 1, 3, /* first Triangle */
-		1, 2, 3 /* second Triangle */
-	};
-
-	unsigned int VBO, VAO, EBO;
+	unsigned int VBO, VAO;
 
 	glGenVertexArrays(1, &VAO);
 
 	glGenBuffers(1, &VBO);
-
-	glGenBuffers(1, &EBO);
 
 	/* bind the Vertex Array Object first, then bind and set vertex buffer(s), and then configure vertex attributes(s). */
 	glBindVertexArray(VAO);
@@ -154,13 +150,15 @@ int main()
 
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), static_cast<void*>(nullptr));
+	/* position attribute */
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), static_cast<void*>(nullptr));
 
 	glEnableVertexAttribArray(0);
+
+	/* color attribute */
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), reinterpret_cast<void*>(3 * sizeof(float)));
+
+	glEnableVertexAttribArray(1);
 
 	/* note that this is allowed, the call to glVertexAttribPointer registered VBO as the vertex attribute's bound vertex buffer object so afterwards we can safely unbind */
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -170,8 +168,6 @@ int main()
 	 * VAOs requires a call to glBindVertexArray anyways so we generally don't unbind VAOs (nor VBOs) when it's not directly necessary.
 	 */
 	glBindVertexArray(0);
-
-	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
 	/* render loop */
 	// ------------------------------
@@ -192,7 +188,7 @@ int main()
 		/* seeing as we only have a single VAO there's no need to bind it every time, but we'll do so to keep things a bit more organized */
 		glBindVertexArray(VAO);
 
-		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
+		glDrawArrays(GL_TRIANGLES, 0, 3);
 
 		/* glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.) */
 		// ------------------------------
@@ -206,8 +202,6 @@ int main()
 	glDeleteVertexArrays(1, &VAO);
 
 	glDeleteBuffers(1, &VBO);
-
-	glDeleteBuffers(1, &EBO);
 
 	/* glfw: terminate, clearing all previously allocated GLFW resources. */
 	// ------------------------------

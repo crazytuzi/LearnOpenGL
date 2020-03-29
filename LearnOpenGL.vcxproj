@@ -145,7 +145,15 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="LearnOpenGL.cpp" />
+    <ClCompile Include="Shader.cpp" />
     <ClCompile Include="Src\glad\glad.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Shader.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Shaders\3.3.shader.fs" />
+    <None Include="Shaders\3.3.shader.vs" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

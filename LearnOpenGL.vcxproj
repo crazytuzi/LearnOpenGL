@@ -147,6 +147,7 @@
     <ClCompile Include="LearnOpenGL.cpp" />
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="Src\glad\glad.c" />
+    <ClCompile Include="stb_image.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Shader.h" />
@@ -154,6 +155,11 @@
   <ItemGroup>
     <None Include="Shaders\3.3.shader.fs" />
     <None Include="Shaders\3.3.shader.vs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="Images\container.jpg" />
+    <Image Include="Images\wall.jpg" />
+    <Image Include="Textures\awesomeface.png" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

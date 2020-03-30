@@ -1,8 +1,11 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 #include <iostream>
+#include <stb_image.h>
 #include "Shader.h"
-#include "stb_image.h"
 
 void frame_buffer_size_callback(GLFWwindow* window, int width, int height);
 
@@ -228,8 +231,21 @@ int main()
 
 		glBindTexture(GL_TEXTURE_2D, texture1);
 
+		/* create transformations */
+		/* make sure to initialize matrix to identity matrix first */
+		auto transform = glm::mat4(1.f);
+
+		transform = translate(transform, glm::vec3(0.5f, -0.5f, 0.f));
+
+		transform = rotate(transform, static_cast<float>(glfwGetTime()), glm::vec3(0.f, 0.f, 1.f));
+
 		/* render container */
 		ourShader.use();
+
+		/* get matrix's uniform location and set matrix */
+		const auto transformLoc = glGetUniformLocation(ourShader.ID, "transform");
+
+		glUniformMatrix4fv(transformLoc, 1, GL_FALSE, value_ptr(transform));
 
 		/* seeing as we only have a single VAO there's no need to bind it every time, but we'll do so to keep things a bit more organized */
 		glBindVertexArray(VAO);

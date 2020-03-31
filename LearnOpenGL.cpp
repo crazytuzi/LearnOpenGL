@@ -53,6 +53,10 @@ int main()
 		return -1;
 	}
 
+	/* configure global opengl state */
+	// ------------------------------
+	glEnable(GL_DEPTH_TEST);
+
 	/* build and compile our shader program */
 	// ------------------------------
 	const Shader ourShader("Shaders/3.3.shader.vs", "Shaders/3.3.shader.fs");
@@ -60,25 +64,68 @@ int main()
 	/* set up vertex data (and buffer(s)) and configure vertex attributes */
 	// ------------------------------
 	float vertices[] = {
-		/* positions */ /* colors */ /* texture coords */
-		0.5f, 0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f, /* top right */
-		0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f, /* bottom right */
-		-0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, /* bottom left */
-		-0.5f, 0.5f, 0.0f, 1.0f, 1.0f, 0.0f, 0.0f, 1.0f /* top left */
+		-0.5f, -0.5f, -0.5f, 0.f, 0.f,
+		0.5f, -0.5f, -0.5f, 1.f, 0.f,
+		0.5f, 0.5f, -0.5f, 1.0f, 1.f,
+		0.5f, 0.5f, -0.5f, 1.0f, 1.f,
+		-0.5f, 0.5f, -0.5f, 0.0f, 1.f,
+		-0.5f, -0.5f, -0.5f, 0.f, 0.f,
+
+		-0.5f, -0.5f, 0.5f, 0.f, 0.f,
+		0.5f, -0.5f, 0.5f, 1.f, 0.f,
+		0.5f, 0.5f, 0.5f, 1.f, 1.f,
+		0.5f, 0.5f, 0.5f, 1.f, 1.f,
+		-0.5f, 0.5f, 0.5f, 0.f, 1.f,
+		-0.5f, -0.5f, 0.5f, 0.f, 0.f,
+
+		-0.5f, 0.5f, 0.5f, 1.f, 0.f,
+		-0.5f, 0.5f, -0.5f, 1.f, 1.f,
+		-0.5f, -0.5f, -0.5f, 0.f, 1.f,
+		-0.5f, -0.5f, -0.5f, 0.f, 1.f,
+		-0.5f, -0.5f, 0.5f, 0.f, 0.f,
+		-0.5f, 0.5f, 0.5f, 1.f, 0.f,
+
+		0.5f, 0.5f, 0.5f, 1.f, 0.f,
+		0.5f, 0.5f, -0.5f, 1.f, 1.f,
+		0.5f, -0.5f, -0.5f, 0.f, 1.f,
+		0.5f, -0.5f, -0.5f, 0.f, 1.f,
+		0.5f, -0.5f, 0.5f, 0.f, 0.f,
+		0.5f, 0.5f, 0.5f, 1.f, 0.f,
+
+		-0.5f, -0.5f, -0.5f, 0.f, 1.f,
+		0.5f, -0.5f, -0.5f, 1.f, 1.f,
+		0.5f, -0.5f, 0.5f, 1.f, 0.f,
+		0.5f, -0.5f, 0.5f, 1.f, 0.f,
+		-0.5f, -0.5f, 0.5f, 0.f, 0.f,
+		-0.5f, -0.5f, -0.5f, 0.f, 1.f,
+
+		-0.5f, 0.5f, -0.5f, 0.f, 1.f,
+		0.5f, 0.5f, -0.5f, 1.f, 1.f,
+		0.5f, 0.5f, 0.5f, 1.f, 0.f,
+		0.5f, 0.5f, 0.5f, 1.f, 0.f,
+		-0.5f, 0.5f, 0.5f, 0.f, 0.f,
+		-0.5f, 0.5f, -0.5f, 0.f, 1.f
 	};
 
-	unsigned int indices[] = {
-		0, 1, 3, /* first triangle */
-		1, 2, 3 /* second triangle */
+	/* world space positions of our cubes */
+	const glm::vec3 cubePositions[] = {
+		glm::vec3(0.f, 0.f, 0.f),
+		glm::vec3(2.f, 5.f, -15.f),
+		glm::vec3(-1.5f, -2.2f, -2.5f),
+		glm::vec3(-3.8f, -2.f, -12.3f),
+		glm::vec3(2.4f, -0.4f, -3.5f),
+		glm::vec3(-1.7f, 3.f, -7.5f),
+		glm::vec3(1.3f, -2.f, -2.5f),
+		glm::vec3(1.5f, 2.f, -2.5f),
+		glm::vec3(1.5f, 0.2f, -1.5f),
+		glm::vec3(-1.3f, 1.f, -1.5f)
 	};
 
-	unsigned int VBO, VAO, EBO;
+	unsigned int VBO, VAO;
 
 	glGenVertexArrays(1, &VAO);
 
 	glGenBuffers(1, &VBO);
-
-	glGenBuffers(1, &EBO);
 
 	/* bind the Vertex Array Object first, then bind and set vertex buffer(s), and then configure vertex attributes(s). */
 	glBindVertexArray(VAO);
@@ -87,24 +134,15 @@ int main()
 
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-
 	/* position attribute */
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), static_cast<void*>(nullptr));
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), static_cast<void*>(nullptr));
 
 	glEnableVertexAttribArray(0);
 
-	/* color attribute */
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), reinterpret_cast<void*>(3 * sizeof(float)));
+	/* texture coord attribute */
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), reinterpret_cast<void*>(3 * sizeof(float)));
 
 	glEnableVertexAttribArray(1);
-
-	/* texture coord attribute */
-	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), reinterpret_cast<void*>(6 * sizeof(float)));
-
-	glEnableVertexAttribArray(2);
 
 	/* note that this is allowed, the call to glVertexAttribPointer registered VBO as the vertex attribute's bound vertex buffer object so afterwards we can safely unbind */
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -218,9 +256,9 @@ int main()
 
 		/* render */
 		// ------------------------------
-		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+		glClearColor(0.2f, 0.3f, 0.3f, 1.f);
 
-		glClear(GL_COLOR_BUFFER_BIT);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		/* bind textures on corresponding texture units */
 		glActiveTexture(GL_TEXTURE0);
@@ -238,13 +276,9 @@ int main()
 		/* create transformations */
 		// ------------------------------
 		/* make sure to initialize matrix to identity matrix first */
-		glm::mat4 model = glm::mat4(1.f);
-
 		glm::mat4 view = glm::mat4(1.f);
 
 		glm::mat4 projection = glm::mat4(1.f);
-
-		model = rotate(model, glm::radians(-55.f), glm::vec3(1.f, 0.f, 0.f));
 
 		view = translate(view, glm::vec3(0.f, 0.f, -3.f));
 
@@ -253,24 +287,28 @@ int main()
 
 		/* retrieve the matrix uniform locations */
 
-		auto modelLoc = glGetUniformLocation(ourShader.ID, "model");
-
-		auto viewLoc = glGetUniformLocation(ourShader.ID, "view");
-
-		/* pass them to the shaders (3 different ways) */
-		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, value_ptr(model));
-
-		glUniformMatrix4fv(viewLoc, 1, GL_FALSE, &view[0][0]);
+		ourShader.setMat4("view", view);
 
 		ourShader.setMat4("projection", projection);
 
-		/* render container */
-		ourShader.use();
-
-		/* seeing as we only have a single VAO there's no need to bind it every time, but we'll do so to keep things a bit more organized */
+		/* render boxes */
 		glBindVertexArray(VAO);
 
-		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
+		for (auto i = 0; i < 10; ++i)
+		{
+			/* calculate the model matrix for each object and pass it to shader before drawing */
+			auto model = glm::mat4(1.f);
+
+			model = translate(model, cubePositions[i]);
+
+			const auto angle = 20.f * i;
+
+			model = rotate(model, glm::radians(angle), glm::vec3(1.f, 0.3f, 0.5f));
+
+			ourShader.setMat4("model", model);
+
+			glDrawArrays(GL_TRIANGLES, 0, 36);
+		}
 
 		/* glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.) */
 		// ------------------------------
@@ -284,8 +322,6 @@ int main()
 	glDeleteVertexArrays(1, &VAO);
 
 	glDeleteBuffers(1, &VBO);
-
-	glDeleteBuffers(1, &EBO);
 
 	/* glfw: terminate, clearing all previously allocated GLFW resources. */
 	// ------------------------------

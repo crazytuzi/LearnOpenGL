@@ -231,21 +231,41 @@ int main()
 
 		glBindTexture(GL_TEXTURE_2D, texture1);
 
+
+		/* activate shader */
+		ourShader.use();
+
 		/* create transformations */
+		// ------------------------------
 		/* make sure to initialize matrix to identity matrix first */
-		auto transform = glm::mat4(1.f);
+		glm::mat4 model = glm::mat4(1.f);
 
-		transform = translate(transform, glm::vec3(0.5f, -0.5f, 0.f));
+		glm::mat4 view = glm::mat4(1.f);
 
-		transform = rotate(transform, static_cast<float>(glfwGetTime()), glm::vec3(0.f, 0.f, 1.f));
+		glm::mat4 projection = glm::mat4(1.f);
+
+		model = rotate(model, glm::radians(-55.f), glm::vec3(1.f, 0.f, 0.f));
+
+		view = translate(view, glm::vec3(0.f, 0.f, -3.f));
+
+		projection = glm::perspective(glm::radians(45.f), static_cast<float>(scr_with) / static_cast<float>(scr_height),
+		                              0.1f, 100.f);
+
+		/* retrieve the matrix uniform locations */
+
+		auto modelLoc = glGetUniformLocation(ourShader.ID, "model");
+
+		auto viewLoc = glGetUniformLocation(ourShader.ID, "view");
+
+		/* pass them to the shaders (3 different ways) */
+		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, value_ptr(model));
+
+		glUniformMatrix4fv(viewLoc, 1, GL_FALSE, &view[0][0]);
+
+		ourShader.setMat4("projection", projection);
 
 		/* render container */
 		ourShader.use();
-
-		/* get matrix's uniform location and set matrix */
-		const auto transformLoc = glGetUniformLocation(ourShader.ID, "transform");
-
-		glUniformMatrix4fv(transformLoc, 1, GL_FALSE, value_ptr(transform));
 
 		/* seeing as we only have a single VAO there's no need to bind it every time, but we'll do so to keep things a bit more organized */
 		glBindVertexArray(VAO);

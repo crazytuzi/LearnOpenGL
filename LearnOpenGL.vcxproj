@@ -144,12 +144,14 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Camera.cpp" />
     <ClCompile Include="LearnOpenGL.cpp" />
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="Src\glad\glad.c" />
     <ClCompile Include="stb_image.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Camera.h" />
     <ClInclude Include="Shader.h" />
   </ItemGroup>
   <ItemGroup>

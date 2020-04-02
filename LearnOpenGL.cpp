@@ -18,7 +18,7 @@ void process_input(GLFWwindow* window);
 /* settings */
 const auto scr_with = 800;
 
-const auto scr_height = 800;
+const auto scr_height = 600;
 
 /* camera */
 Camera camera(glm::vec3(0.f, 0.f, 3.f));
@@ -94,47 +94,47 @@ int main()
 	/* set up vertex data (and buffer(s)) and configure vertex attributes */
 	// ------------------------------
 	float vertices[] = {
-		-0.5f, -0.5f, -0.5f,
-		0.5f, -0.5f, -0.5f,
-		0.5f, 0.5f, -0.5f,
-		0.5f, 0.5f, -0.5f,
-		-0.5f, 0.5f, -0.5f,
-		-0.5f, -0.5f, -0.5f,
+		-0.5f, -0.5f, -0.5f, 0.0f, 0.0f, -1.0f,
+		0.5f, -0.5f, -0.5f, 0.0f, 0.0f, -1.0f,
+		0.5f, 0.5f, -0.5f, 0.0f, 0.0f, -1.0f,
+		0.5f, 0.5f, -0.5f, 0.0f, 0.0f, -1.0f,
+		-0.5f, 0.5f, -0.5f, 0.0f, 0.0f, -1.0f,
+		-0.5f, -0.5f, -0.5f, 0.0f, 0.0f, -1.0f,
 
-		-0.5f, -0.5f, 0.5f,
-		0.5f, -0.5f, 0.5f,
-		0.5f, 0.5f, 0.5f,
-		0.5f, 0.5f, 0.5f,
-		-0.5f, 0.5f, 0.5f,
-		-0.5f, -0.5f, 0.5f,
+		-0.5f, -0.5f, 0.5f, 0.0f, 0.0f, 1.0f,
+		0.5f, -0.5f, 0.5f, 0.0f, 0.0f, 1.0f,
+		0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 1.0f,
+		0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 1.0f,
+		-0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 1.0f,
+		-0.5f, -0.5f, 0.5f, 0.0f, 0.0f, 1.0f,
 
-		-0.5f, 0.5f, 0.5f,
-		-0.5f, 0.5f, -0.5f,
-		-0.5f, -0.5f, -0.5f,
-		-0.5f, -0.5f, -0.5f,
-		-0.5f, -0.5f, 0.5f,
-		-0.5f, 0.5f, 0.5f,
+		-0.5f, 0.5f, 0.5f, -1.0f, 0.0f, 0.0f,
+		-0.5f, 0.5f, -0.5f, -1.0f, 0.0f, 0.0f,
+		-0.5f, -0.5f, -0.5f, -1.0f, 0.0f, 0.0f,
+		-0.5f, -0.5f, -0.5f, -1.0f, 0.0f, 0.0f,
+		-0.5f, -0.5f, 0.5f, -1.0f, 0.0f, 0.0f,
+		-0.5f, 0.5f, 0.5f, -1.0f, 0.0f, 0.0f,
 
-		0.5f, 0.5f, 0.5f,
-		0.5f, 0.5f, -0.5f,
-		0.5f, -0.5f, -0.5f,
-		0.5f, -0.5f, -0.5f,
-		0.5f, -0.5f, 0.5f,
-		0.5f, 0.5f, 0.5f,
+		0.5f, 0.5f, 0.5f, 1.0f, 0.0f, 0.0f,
+		0.5f, 0.5f, -0.5f, 1.0f, 0.0f, 0.0f,
+		0.5f, -0.5f, -0.5f, 1.0f, 0.0f, 0.0f,
+		0.5f, -0.5f, -0.5f, 1.0f, 0.0f, 0.0f,
+		0.5f, -0.5f, 0.5f, 1.0f, 0.0f, 0.0f,
+		0.5f, 0.5f, 0.5f, 1.0f, 0.0f, 0.0f,
 
-		-0.5f, -0.5f, -0.5f,
-		0.5f, -0.5f, -0.5f,
-		0.5f, -0.5f, 0.5f,
-		0.5f, -0.5f, 0.5f,
-		-0.5f, -0.5f, 0.5f,
-		-0.5f, -0.5f, -0.5f,
+		-0.5f, -0.5f, -0.5f, 0.0f, -1.0f, 0.0f,
+		0.5f, -0.5f, -0.5f, 0.0f, -1.0f, 0.0f,
+		0.5f, -0.5f, 0.5f, 0.0f, -1.0f, 0.0f,
+		0.5f, -0.5f, 0.5f, 0.0f, -1.0f, 0.0f,
+		-0.5f, -0.5f, 0.5f, 0.0f, -1.0f, 0.0f,
+		-0.5f, -0.5f, -0.5f, 0.0f, -1.0f, 0.0f,
 
-		-0.5f, 0.5f, -0.5f,
-		0.5f, 0.5f, -0.5f,
-		0.5f, 0.5f, 0.5f,
-		0.5f, 0.5f, 0.5f,
-		-0.5f, 0.5f, 0.5f,
-		-0.5f, 0.5f, -0.5f,
+		-0.5f, 0.5f, -0.5f, 0.0f, 1.0f, 0.0f,
+		0.5f, 0.5f, -0.5f, 0.0f, 1.0f, 0.0f,
+		0.5f, 0.5f, 0.5f, 0.0f, 1.0f, 0.0f,
+		0.5f, 0.5f, 0.5f, 0.0f, 1.0f, 0.0f,
+		-0.5f, 0.5f, 0.5f, 0.0f, 1.0f, 0.0f,
+		-0.5f, 0.5f, -0.5f, 0.0f, 1.0f, 0.0f
 	};
 
 	/* first, configure the cube's VAO (and VBO) */
@@ -151,9 +151,13 @@ int main()
 	glBindVertexArray(cubeVAO);
 
 	/* position attribute */
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), static_cast<void*>(nullptr));
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), static_cast<void*>(nullptr));
 
 	glEnableVertexAttribArray(0);
+
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), reinterpret_cast<void*>(3 * sizeof(float)));
+
+	glEnableVertexAttribArray(1);
 
 	/* second, configure the light's VAO (VBO stays the same; the vertices are the same for the light object which is also a 3D cube) */
 	unsigned int lightVAO;
@@ -169,7 +173,7 @@ int main()
 	 */
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), static_cast<void*>(nullptr));
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), static_cast<void*>(nullptr));
 
 	glEnableVertexAttribArray(0);
 
@@ -201,6 +205,10 @@ int main()
 		lightingShader.setVec3("objectColor", 1.f, 0.5f, 0.31f);
 
 		lightingShader.setVec3("lightColor", 1.f, 1.f, 1.f);
+
+		lightingShader.setVec3("lightPos", lightPos);
+
+		lightingShader.setVec3("viewPos", camera.Position);
 
 		/* view/projection transformations */
 		auto projection = glm::perspective(glm::radians(camera.Zoom), static_cast<float>(scr_with) / scr_height, 0.1f,
@@ -312,21 +320,21 @@ void mouse_callback(GLFWwindow* window, const double xpos, const double ypos)
 	if (bIsFirstMouse)
 	{
 		lastX = xpos;
-
+	
 		lastY = ypos;
-
+	
 		bIsFirstMouse = false;
 	}
-
+	
 	const auto xoffset = xpos - lastX;
-
+	
 	/* reversed since y-coordinates go from bottom to top */
 	const auto yoffset = lastY - ypos;
-
+	
 	lastX = xpos;
-
+	
 	lastY = ypos;
-
+	
 	camera.ProcessMouseMovement(xoffset, yoffset);
 }
 

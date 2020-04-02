@@ -155,6 +155,10 @@
     <ClInclude Include="Shader.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Shaders\1.colors.fs" />
+    <None Include="Shaders\1.colors.vs" />
+    <None Include="Shaders\1.lamp.fs" />
+    <None Include="Shaders\1.lamp.vs" />
     <None Include="Shaders\3.3.shader.fs" />
     <None Include="Shaders\3.3.shader.vs" />
   </ItemGroup>

@@ -52,6 +52,18 @@
     <None Include="Shaders\3.3.shader.fs">
       <Filter>Resource Files\Shaders</Filter>
     </None>
+    <None Include="Shaders\1.colors.fs">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="Shaders\1.colors.vs">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="Shaders\1.lamp.fs">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="Shaders\1.lamp.vs">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Images\wall.jpg">

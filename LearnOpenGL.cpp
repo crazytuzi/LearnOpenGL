@@ -142,6 +142,20 @@ int main()
 		-0.5f, 0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f
 	};
 
+	/* positions all containers */
+	glm::vec3 cubePositions[] = {
+		glm::vec3(0.f, 0.f, 0.f),
+		glm::vec3(2.f, 5.f, -15.f),
+		glm::vec3(-1.5f, -2.2f, -2.5f),
+		glm::vec3(-3.8f, -2.f, -12.3f),
+		glm::vec3(2.4f, -0.4f, -3.5f),
+		glm::vec3(-1.7f, 3.f, -7.5f),
+		glm::vec3(1.3f, -2.f, -2.5f),
+		glm::vec3(1.5f, 2.f, -2.5f),
+		glm::vec3(1.5f, 0.2f, -1.5f),
+		glm::vec3(-1.3f, 1.f, -1.5f)
+	};
+
 	/* first, configure the cube's VAO (and VBO) */
 	unsigned int VBO, cubeVAO;
 
@@ -192,7 +206,7 @@ int main()
 	// ------------------------------
 	const auto diffuseMap = loadTexture("Textures/container2.png");
 
-	const auto specularMap = loadTexture("Textures/lighting_maps_specular_color.png");
+	const auto specularMap = loadTexture("Textures/container2_specular.png");
 
 	/* shader configuration */
 	// ------------------------------
@@ -200,15 +214,7 @@ int main()
 
 	lightingShader.setInt("material.diffuse", 0);
 
-	glActiveTexture(GL_TEXTURE0);
-
-	glBindTexture(GL_TEXTURE_2D, diffuseMap);
-
 	lightingShader.setInt("material.specular", 1);
-
-	glActiveTexture(GL_TEXTURE1);
-
-	glBindTexture(GL_TEXTURE_2D, specularMap);
 
 	/* render loop */
 	// ------------------------------
@@ -233,14 +239,14 @@ int main()
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		/* change the light's position values over time (can be done anywhere in the render loop actually, but try to do it at least before using the light source positions) */
-		lightPos.x = 1.f + sin(glfwGetTime()) * 2.f;
-
-		lightPos.y = sin(glfwGetTime() / 2.f) * 1.f;
+		// lightPos.x = 1.f + sin(glfwGetTime()) * 2.f;
+		//
+		// lightPos.y = sin(glfwGetTime() / 2.f) * 1.f;
 
 		/* be sure to activate shader when setting uniforms/drawing objects */
 		lightingShader.use();
 
-		lightingShader.setVec3("light.position", lightPos);
+		lightingShader.setVec3("light.direction", -0.2f, -1.f, -0.3f);
 
 		lightingShader.setVec3("viewPos", camera.Position);
 
@@ -252,7 +258,7 @@ int main()
 		lightingShader.setVec3("light.specular", 1.f, 1.f, 1.f);
 
 		/* material properties */
-		lightingShader.setFloat("material.shininess", 64.f);
+		lightingShader.setFloat("material.shininess", 32.f);
 
 		/* view/projection transformations */
 		auto projection = glm::perspective(glm::radians(camera.Zoom), static_cast<float>(scr_with) / scr_height, 0.1f,
@@ -269,30 +275,34 @@ int main()
 
 		lightingShader.setMat4("model", model);
 
-		/* render the cube */
+		/* bind diffuse map */
+		glActiveTexture(GL_TEXTURE0);
+
+		glBindTexture(GL_TEXTURE_2D, diffuseMap);
+
+		/* bind specular map */
+		glActiveTexture(GL_TEXTURE1);
+
+		glBindTexture(GL_TEXTURE_2D, specularMap);
+
+		/* render containers */
 		glBindVertexArray(cubeVAO);
 
-		glDrawArrays(GL_TRIANGLES, 0, 36);
+		for (auto i = 0; i < 10; ++i)
+		{
+			/* calculate the model matrix for each object and pass it to shader before drawing */
+			auto model = glm::mat4(1.f);
 
-		/* also draw the lamp object */
-		lampShader.use();
+			model = translate(model, cubePositions[i]);
 
-		lampShader.setMat4("projection", projection);
+			const auto angle = 20.f * i;
 
-		lampShader.setMat4("view", view);
+			model = rotate(model, glm::radians(angle), glm::vec3(1.f, 0.3f, 0.5f));
 
-		model = glm::mat4(1.f);
+			lightingShader.setMat4("model", model);
 
-		model = translate(model, lightPos);
-
-		/* a smaller cube */
-		model = scale(model, glm::vec3(0.2f));
-
-		lampShader.setMat4("model", model);
-
-		glBindVertexArray(lightVAO);
-
-		glDrawArrays(GL_TRIANGLES, 0, 36);
+			glDrawArrays(GL_TRIANGLES, 0, 36);
+		}
 
 		/* glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.) */
 		// ------------------------------

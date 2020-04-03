@@ -75,5 +75,14 @@
     <Image Include="Textures\awesomeface.png">
       <Filter>Resource Files\Textures</Filter>
     </Image>
+    <Image Include="Textures\container2.png">
+      <Filter>Resource Files\Textures</Filter>
+    </Image>
+    <Image Include="Textures\container2_specular.png">
+      <Filter>Resource Files\Textures</Filter>
+    </Image>
+    <Image Include="Textures\lighting_maps_specular_color.png">
+      <Filter>Resource Files\Textures</Filter>
+    </Image>
   </ItemGroup>
 </Project>

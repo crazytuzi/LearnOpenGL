@@ -155,6 +155,7 @@ int main()
 
 	glEnableVertexAttribArray(0);
 
+	/* normal attribute */
 	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), reinterpret_cast<void*>(3 * sizeof(float)));
 
 	glEnableVertexAttribArray(1);
@@ -202,13 +203,40 @@ int main()
 		/* be sure to activate shader when setting uniforms/drawing objects */
 		lightingShader.use();
 
-		lightingShader.setVec3("objectColor", 1.f, 0.5f, 0.31f);
-
-		lightingShader.setVec3("lightColor", 1.f, 1.f, 1.f);
-
-		lightingShader.setVec3("lightPos", lightPos);
+		lightingShader.setVec3("light.position", lightPos);
 
 		lightingShader.setVec3("viewPos", camera.Position);
+
+		/* light properties */
+		glm::vec3 lightColor;
+
+		lightColor.x = sin(glfwGetTime() * 2.f);
+
+		lightColor.y = sin(glfwGetTime() * 0.7f);
+
+		lightColor.z = sin(glfwGetTime() * 1.3f);
+
+		/* decrease the influence */
+		auto diffuseColor = lightColor * glm::vec3(0.5f);
+
+		/* low influence */
+		auto ambientColor = diffuseColor * glm::vec3(0.2f);
+
+		lightingShader.setVec3("light.ambient", ambientColor);
+
+		lightingShader.setVec3("light.diffuse", diffuseColor);
+
+		lightingShader.setVec3("light.specular", 1.f, 1.f, 1.f);
+
+		/* material properties */
+		lightingShader.setVec3("material.ambient", 1.f, 0.5f, 0.31f);
+
+		lightingShader.setVec3("material.diffuse", 1.f, 0.5f, 0.31f);
+
+		/* specular lighting doesn't have full effect on this object's material */
+		lightingShader.setVec3("material.specular", 0.5f, 0.5f, 0.5f);
+
+		lightingShader.setFloat("material.shininess", 32.f);
 
 		/* view/projection transformations */
 		auto projection = glm::perspective(glm::radians(camera.Zoom), static_cast<float>(scr_with) / scr_height, 0.1f,
@@ -320,21 +348,21 @@ void mouse_callback(GLFWwindow* window, const double xpos, const double ypos)
 	if (bIsFirstMouse)
 	{
 		lastX = xpos;
-	
+
 		lastY = ypos;
-	
+
 		bIsFirstMouse = false;
 	}
-	
+
 	const auto xoffset = xpos - lastX;
-	
+
 	/* reversed since y-coordinates go from bottom to top */
 	const auto yoffset = lastY - ypos;
-	
+
 	lastX = xpos;
-	
+
 	lastY = ypos;
-	
+
 	camera.ProcessMouseMovement(xoffset, yoffset);
 }
 

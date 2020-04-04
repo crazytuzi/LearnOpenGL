@@ -15,7 +15,7 @@ Mesh::Mesh(const std::vector<Vertex>& vertices, const std::vector<unsigned int>&
 	setupMesh();
 }
 
-void Mesh::Draw(Shader shader)
+void Mesh::Draw(const Shader& shader) const
 {
 	/* bind appropriate textures */
 	unsigned int diffuseNr = 0;
@@ -26,10 +26,10 @@ void Mesh::Draw(Shader shader)
 
 	unsigned int heightNr = 0;
 
-	for (auto i = 0; i < textures.size(); ++i)
+	for (auto i = 0u; i < textures.size(); ++i)
 	{
 		/* active proper texture unit before binding */
-		glActiveTexture(GL_TEXTURE + i);
+		glActiveTexture(GL_TEXTURE0 + i);
 
 		/* retrieve texture number (the N in diffuse_textureN) */
 		std::string number;

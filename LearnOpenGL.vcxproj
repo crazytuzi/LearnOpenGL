@@ -84,6 +84,8 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
+    <IncludePath>Include;$(IncludePath)</IncludePath>
+    <LibraryPath>Libs;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -141,12 +143,14 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>glfw3.lib;opengl32.lib;assimp.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="LearnOpenGL.cpp" />
     <ClCompile Include="Mesh.cpp" />
+    <ClCompile Include="Model.cpp" />
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="Src\glad\glad.c" />
     <ClCompile Include="stb_image.cpp" />
@@ -154,23 +158,48 @@
   <ItemGroup>
     <ClInclude Include="Camera.h" />
     <ClInclude Include="Mesh.h" />
+    <ClInclude Include="Model.h" />
     <ClInclude Include="Shader.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Objects\nanosuit\nanosuit.blend" />
+    <None Include="Objects\nanosuit\nanosuit.mtl" />
     <None Include="Shaders\1.colors.fs" />
     <None Include="Shaders\1.colors.vs" />
     <None Include="Shaders\1.lamp.fs" />
     <None Include="Shaders\1.lamp.vs" />
+    <None Include="Shaders\1.model_loading.fs" />
+    <None Include="Shaders\1.model_loading.vs" />
     <None Include="Shaders\3.3.shader.fs" />
     <None Include="Shaders\3.3.shader.vs" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Images\container.jpg" />
     <Image Include="Images\wall.jpg" />
+    <Image Include="Objects\nanosuit\arm_dif.png" />
+    <Image Include="Objects\nanosuit\arm_showroom_ddn.png" />
+    <Image Include="Objects\nanosuit\arm_showroom_spec.png" />
+    <Image Include="Objects\nanosuit\body_dif.png" />
+    <Image Include="Objects\nanosuit\body_showroom_ddn.png" />
+    <Image Include="Objects\nanosuit\body_showroom_spec.png" />
+    <Image Include="Objects\nanosuit\glass_ddn.png" />
+    <Image Include="Objects\nanosuit\glass_dif.png" />
+    <Image Include="Objects\nanosuit\hand_dif.png" />
+    <Image Include="Objects\nanosuit\hand_showroom_ddn.png" />
+    <Image Include="Objects\nanosuit\hand_showroom_spec.png" />
+    <Image Include="Objects\nanosuit\helmet_diff.png" />
+    <Image Include="Objects\nanosuit\helmet_showroom_ddn.png" />
+    <Image Include="Objects\nanosuit\helmet_showroom_spec.png" />
+    <Image Include="Objects\nanosuit\leg_dif.png" />
+    <Image Include="Objects\nanosuit\leg_showroom_ddn.png" />
+    <Image Include="Objects\nanosuit\leg_showroom_spec.png" />
     <Image Include="Textures\awesomeface.png" />
     <Image Include="Textures\container2.png" />
     <Image Include="Textures\container2_specular.png" />
     <Image Include="Textures\lighting_maps_specular_color.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="Objects\nanosuit\LICENSE.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

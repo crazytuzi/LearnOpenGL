@@ -246,7 +246,7 @@ int main()
 		/* be sure to activate shader when setting uniforms/drawing objects */
 		lightingShader.use();
 
-		lightingShader.setVec3("light.direction", -0.2f, -1.f, -0.3f);
+		lightingShader.setVec3("light.position", lightPos);
 
 		lightingShader.setVec3("viewPos", camera.Position);
 
@@ -256,6 +256,12 @@ int main()
 		lightingShader.setVec3("light.diffuse", 0.5f, 0.5f, 0.5f);
 
 		lightingShader.setVec3("light.specular", 1.f, 1.f, 1.f);
+
+		lightingShader.setFloat("light.constant", 1.f);
+
+		lightingShader.setFloat("light.linear", 0.09f);
+
+		lightingShader.setFloat("light.quadratic", 0.032f);
 
 		/* material properties */
 		lightingShader.setFloat("material.shininess", 32.f);

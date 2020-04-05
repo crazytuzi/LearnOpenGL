@@ -8,7 +8,6 @@
 
 #include "Shader.h"
 #include "Camera.h"
-#include "Model.h"
 
 void frame_buffer_size_callback(GLFWwindow* window, int width, int height);
 
@@ -21,9 +20,9 @@ void process_input(GLFWwindow* window);
 unsigned int loadTexture(const char* path);
 
 /* settings */
-const auto scr_with = 800;
+const auto scr_with = 1280;
 
-const auto scr_height = 600;
+const auto scr_height = 720;
 
 /* camera */
 Camera camera(glm::vec3(0.f, 0.f, 3.f));
@@ -91,14 +90,131 @@ int main()
 	// ------------------------------
 	glEnable(GL_DEPTH_TEST);
 
+	/* always pass the depth test (same effect as glDisable(GL_DEPTH_TEST)) */
+	// glDepthFunc(GL_ALWAYS);
+
 	/* build and compile our shader program */
 	// ------------------------------
-	const Shader ourShader("Shaders/1.model_loading.vs", "Shaders/1.model_loading.fs");
+	const Shader shader("Shaders/1.1.depth_testing.vs", "Shaders/1.1.depth_testing.fs");
 
-	/* load models */
+	/* set up vertex data (and buffer(s)) and configure vertex attributes */
 	// ------------------------------
+	float cubeVertices[] = {
+		/* positions */ /* texture Coords */
+		-0.5f, -0.5f, -0.5f, 0.0f, 0.0f,
+		0.5f, -0.5f, -0.5f, 1.0f, 0.0f,
+		0.5f, 0.5f, -0.5f, 1.0f, 1.0f,
+		0.5f, 0.5f, -0.5f, 1.0f, 1.0f,
+		-0.5f, 0.5f, -0.5f, 0.0f, 1.0f,
+		-0.5f, -0.5f, -0.5f, 0.0f, 0.0f,
 
-	Model outModel("Objects/nanosuit/nanosuit.obj");
+		-0.5f, -0.5f, 0.5f, 0.0f, 0.0f,
+		0.5f, -0.5f, 0.5f, 1.0f, 0.0f,
+		0.5f, 0.5f, 0.5f, 1.0f, 1.0f,
+		0.5f, 0.5f, 0.5f, 1.0f, 1.0f,
+		-0.5f, 0.5f, 0.5f, 0.0f, 1.0f,
+		-0.5f, -0.5f, 0.5f, 0.0f, 0.0f,
+
+		-0.5f, 0.5f, 0.5f, 1.0f, 0.0f,
+		-0.5f, 0.5f, -0.5f, 1.0f, 1.0f,
+		-0.5f, -0.5f, -0.5f, 0.0f, 1.0f,
+		-0.5f, -0.5f, -0.5f, 0.0f, 1.0f,
+		-0.5f, -0.5f, 0.5f, 0.0f, 0.0f,
+		-0.5f, 0.5f, 0.5f, 1.0f, 0.0f,
+
+		0.5f, 0.5f, 0.5f, 1.0f, 0.0f,
+		0.5f, 0.5f, -0.5f, 1.0f, 1.0f,
+		0.5f, -0.5f, -0.5f, 0.0f, 1.0f,
+		0.5f, -0.5f, -0.5f, 0.0f, 1.0f,
+		0.5f, -0.5f, 0.5f, 0.0f, 0.0f,
+		0.5f, 0.5f, 0.5f, 1.0f, 0.0f,
+
+		-0.5f, -0.5f, -0.5f, 0.0f, 1.0f,
+		0.5f, -0.5f, -0.5f, 1.0f, 1.0f,
+		0.5f, -0.5f, 0.5f, 1.0f, 0.0f,
+		0.5f, -0.5f, 0.5f, 1.0f, 0.0f,
+		-0.5f, -0.5f, 0.5f, 0.0f, 0.0f,
+		-0.5f, -0.5f, -0.5f, 0.0f, 1.0f,
+
+		-0.5f, 0.5f, -0.5f, 0.0f, 1.0f,
+		0.5f, 0.5f, -0.5f, 1.0f, 1.0f,
+		0.5f, 0.5f, 0.5f, 1.0f, 0.0f,
+		0.5f, 0.5f, 0.5f, 1.0f, 0.0f,
+		-0.5f, 0.5f, 0.5f, 0.0f, 0.0f,
+		-0.5f, 0.5f, -0.5f, 0.0f, 1.0f
+	};
+	float planeVertices[] = {
+		/* positions */
+		/*
+		 * texture Coords (note we set these higher than 1 (together with GL_REPEAT as texture wrapping mode).
+		 * this will cause the floor texture to repeat)
+		 */
+		5.0f, -0.5f, 5.0f, 2.0f, 0.0f,
+		-5.0f, -0.5f, 5.0f, 0.0f, 0.0f,
+		-5.0f, -0.5f, -5.0f, 0.0f, 2.0f,
+
+		5.0f, -0.5f, 5.0f, 2.0f, 0.0f,
+		-5.0f, -0.5f, -5.0f, 0.0f, 2.0f,
+		5.0f, -0.5f, -5.0f, 2.0f, 2.0f
+	};
+
+	/* cube VAO */
+	unsigned int cubeVAO, cubeVBO;
+
+	glGenVertexArrays(1, &cubeVAO);
+
+	glGenBuffers(1, &cubeVBO);
+
+	glBindVertexArray(cubeVAO);
+
+	glBindBuffer(GL_ARRAY_BUFFER, cubeVBO);
+
+	glBufferData(GL_ARRAY_BUFFER, sizeof(cubeVertices), &cubeVertices, GL_STATIC_DRAW);
+
+	glEnableVertexAttribArray(0);
+
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), static_cast<void*>(nullptr));
+
+	glEnableVertexAttribArray(1);
+
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), reinterpret_cast<void*>(3 * sizeof(float)));
+
+	glBindVertexArray(0);
+
+	/* plane VAO */
+	unsigned int planeVAO, planeVBO;
+
+	glGenVertexArrays(1, &planeVAO);
+
+	glGenBuffers(1, &planeVBO);
+
+	glBindVertexArray(planeVAO);
+
+	glBindBuffer(GL_ARRAY_BUFFER, planeVBO);
+
+	glBufferData(GL_ARRAY_BUFFER, sizeof(planeVertices), &planeVertices, GL_STATIC_DRAW);
+
+	glEnableVertexAttribArray(0);
+
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), static_cast<void*>(nullptr));
+
+	glEnableVertexAttribArray(1);
+
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), reinterpret_cast<void*>(3 * sizeof(float)));
+
+	glBindVertexArray(0);
+
+	/* load textures */
+	// ------------------------------
+	const auto cubeTexture = loadTexture("Textures/marble.jpg");
+
+	const auto floorTexture = loadTexture("Textures/metal.png");
+
+	/* shader configuration */
+	// ------------------------------
+	shader.use();
+
+	shader.setInt("texture0", 0);
 
 	/* render loop */
 	// ------------------------------
@@ -122,31 +238,51 @@ int main()
 
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		/* don't forget to enable shader before setting uniforms */
-		ourShader.use();
+		shader.use();
 
-		/* view/projection transformations */
-		auto projection = glm::perspective(glm::radians(camera.Zoom), static_cast<float>(scr_with) / scr_height, 0.1f,
-			100.f);
+		auto model = glm::mat4(1.0f);
 
 		auto view = camera.GetViewMatrix();
 
-		ourShader.setMat4("projection", projection);
+		auto projection = glm::perspective(glm::radians(camera.Zoom),
+		                                   static_cast<float>(scr_with) / static_cast<float>(scr_height), 0.1f,
+		                                   100.0f);
 
-		ourShader.setMat4("view", view);
+		shader.setMat4("view", view);
 
-		/* render the loaded model */
-		auto model = glm::mat4(1.f);
+		shader.setMat4("projection", projection);
 
-		/* translate it down so it's at the center of the scene */
-		model = glm::translate(model, glm::vec3(0.f, -1.75f, 0.f));
+		/* cubes */
+		glBindVertexArray(cubeVAO);
 
-		/* it's a bit too big for our scene, so scale it down */
-		model = glm::scale(model, glm::vec3(0.2f, 0.2f, 0.2f));
+		glActiveTexture(GL_TEXTURE0);
 
-		ourShader.setMat4("model", model);
+		glBindTexture(GL_TEXTURE_2D, cubeTexture);
 
-		outModel.Draw(ourShader);
+		model = translate(model, glm::vec3(-1.0f, 0.0f, -1.0f));
+
+		shader.setMat4("model", model);
+
+		glDrawArrays(GL_TRIANGLES, 0, 36);
+
+		model = glm::mat4(1.0f);
+
+		model = translate(model, glm::vec3(2.0f, 0.0f, 0.0f));
+
+		shader.setMat4("model", model);
+
+		glDrawArrays(GL_TRIANGLES, 0, 36);
+
+		/* floor */
+		glBindVertexArray(planeVAO);
+
+		glBindTexture(GL_TEXTURE_2D, floorTexture);
+
+		shader.setMat4("model", glm::mat4(1.0f));
+
+		glDrawArrays(GL_TRIANGLES, 0, 6);
+
+		glBindVertexArray(0);
 
 		/* glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.) */
 		// ------------------------------

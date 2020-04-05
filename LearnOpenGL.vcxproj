@@ -164,6 +164,8 @@
   <ItemGroup>
     <None Include="Objects\nanosuit\nanosuit.blend" />
     <None Include="Objects\nanosuit\nanosuit.mtl" />
+    <None Include="Shaders\1.1.depth_testing.fs" />
+    <None Include="Shaders\1.1.depth_testing.vs" />
     <None Include="Shaders\1.colors.fs" />
     <None Include="Shaders\1.colors.vs" />
     <None Include="Shaders\1.lamp.fs" />
@@ -197,6 +199,8 @@
     <Image Include="Textures\container2.png" />
     <Image Include="Textures\container2_specular.png" />
     <Image Include="Textures\lighting_maps_specular_color.png" />
+    <Image Include="Textures\marble.jpg" />
+    <Image Include="Textures\metal.png" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="Objects\nanosuit\LICENSE.txt" />

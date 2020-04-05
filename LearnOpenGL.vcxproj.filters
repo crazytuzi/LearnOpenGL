@@ -100,6 +100,15 @@
     <None Include="Shaders\1.1.depth_testing.vs">
       <Filter>Resource Files\Shaders</Filter>
     </None>
+    <None Include="Shaders\2.stencil_testing.vs">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="Shaders\2.stencil_testing.fs">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="Shaders\2.stencil_single_color.fs">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Images\wall.jpg">

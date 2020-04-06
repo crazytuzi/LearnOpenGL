@@ -175,6 +175,8 @@
     <None Include="Shaders\2.stencil_single_color.fs" />
     <None Include="Shaders\2.stencil_testing.fs" />
     <None Include="Shaders\2.stencil_testing.vs" />
+    <None Include="Shaders\3.1.blending.fs" />
+    <None Include="Shaders\3.1.blending.vs" />
     <None Include="Shaders\3.3.shader.fs" />
     <None Include="Shaders\3.3.shader.vs" />
   </ItemGroup>
@@ -201,6 +203,7 @@
     <Image Include="Textures\awesomeface.png" />
     <Image Include="Textures\container2.png" />
     <Image Include="Textures\container2_specular.png" />
+    <Image Include="Textures\grass.png" />
     <Image Include="Textures\lighting_maps_specular_color.png" />
     <Image Include="Textures\marble.jpg" />
     <Image Include="Textures\metal.png" />

@@ -201,6 +201,7 @@
     <Image Include="Objects\nanosuit\leg_showroom_ddn.png" />
     <Image Include="Objects\nanosuit\leg_showroom_spec.png" />
     <Image Include="Textures\awesomeface.png" />
+    <Image Include="Textures\blending_transparent_window.png" />
     <Image Include="Textures\container2.png" />
     <Image Include="Textures\container2_specular.png" />
     <Image Include="Textures\grass.png" />

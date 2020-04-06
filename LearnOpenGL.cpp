@@ -4,6 +4,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <iostream>
+#include <map>
 #include <stb_image.h>
 #include <vector>
 
@@ -88,6 +89,10 @@ int main()
 	/* configure global opengl state */
 	// ------------------------------
 	glEnable(GL_DEPTH_TEST);
+
+	glEnable(GL_BLEND);
+
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	/* build and compile our shader program */
 	// ------------------------------
@@ -236,11 +241,11 @@ int main()
 
 	const auto floorTexture = loadTexture("Textures/metal.png");
 
-	const auto transparentTexture = loadTexture("Textures/grass.png");
+	const auto transparentTexture = loadTexture("Textures/blending_transparent_window.png");
 
-	/* transparent vegetation locations */
+	/* transparent window locations */
 	// ------------------------------
-	std::vector<glm::vec3> vegetation
+	std::vector<glm::vec3> windows
 	{
 		glm::vec3(-1.5f, 0.0f, -0.48f),
 		glm::vec3(1.5f, 0.0f, 0.51f),
@@ -270,6 +275,17 @@ int main()
 		/* input */
 		// ------------------------------
 		process_input(window);
+
+		/* sort the transparent windows before rendering */
+		// ------------------------------
+		std::map<float, glm::vec3> sorted;
+
+		for (auto win : windows)
+		{
+			auto distance = length(camera.Position - win);
+
+			sorted[distance] = win;
+		}
 
 		/* render */
 		// ------------------------------
@@ -324,7 +340,7 @@ int main()
 
 		glDrawArrays(GL_TRIANGLES, 0, 6);
 
-		/* vegetation */
+		/* windows (from furthest to nearest) */
 		glBindVertexArray(transparentVAO);
 
 		glBindTexture(GL_TEXTURE_2D, transparentTexture);
@@ -333,11 +349,14 @@ int main()
 
 		shader.setMat4("projection", projection);
 
-		for (auto grass : vegetation)
+		for (auto it = sorted.rbegin(); it != sorted.rend(); ++it)
 		{
 			model = glm::mat4(1.0f);
-			model = translate(model, grass);
+
+			model = translate(model, it->second);
+
 			shader.setMat4("model", model);
+
 			glDrawArrays(GL_TRIANGLES, 0, 6);
 		}
 

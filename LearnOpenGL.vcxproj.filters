@@ -195,6 +195,9 @@
     <Image Include="Textures\grass.png">
       <Filter>Resource Files\Textures</Filter>
     </Image>
+    <Image Include="Textures\blending_transparent_window.png">
+      <Filter>Resource Files\Textures</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
     <Text Include="Objects\nanosuit\LICENSE.txt">

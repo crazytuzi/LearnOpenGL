@@ -179,6 +179,10 @@
     <None Include="Shaders\3.1.blending.vs" />
     <None Include="Shaders\3.3.shader.fs" />
     <None Include="Shaders\3.3.shader.vs" />
+    <None Include="Shaders\5.1.framebuffers.fs" />
+    <None Include="Shaders\5.1.framebuffers.vs" />
+    <None Include="Shaders\5.1.framebuffers_screen.fs" />
+    <None Include="Shaders\5.1.framebuffers_screen.vs" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Images\container.jpg" />

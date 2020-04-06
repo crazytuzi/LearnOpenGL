@@ -142,6 +142,12 @@
     <None Include="Shaders\6.1.skybox.vs">
       <Filter>Resource Files\Shaders</Filter>
     </None>
+    <None Include="Shaders\6.2.cubemaps.fs">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="Shaders\6.2.cubemaps.vs">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Images\wall.jpg">

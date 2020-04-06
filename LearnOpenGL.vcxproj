@@ -164,6 +164,8 @@
   <ItemGroup>
     <None Include="Objects\nanosuit\nanosuit.blend" />
     <None Include="Objects\nanosuit\nanosuit.mtl" />
+    <None Include="Objects\nanosuit_reflection\nanosuit.blend" />
+    <None Include="Objects\nanosuit_reflection\nanosuit.mtl" />
     <None Include="Shaders\1.1.depth_testing.fs" />
     <None Include="Shaders\1.1.depth_testing.vs" />
     <None Include="Shaders\1.colors.fs" />
@@ -191,6 +193,8 @@
     <None Include="Shaders\6.2.cubemaps.vs" />
     <None Include="Shaders\6.3.cubemaps.fs" />
     <None Include="Shaders\6.3.cubemaps.vs" />
+    <None Include="Shaders\6.4.model.fs" />
+    <None Include="Shaders\6.4.model.vs" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Images\container.jpg" />
@@ -212,6 +216,29 @@
     <Image Include="Objects\nanosuit\leg_dif.png" />
     <Image Include="Objects\nanosuit\leg_showroom_ddn.png" />
     <Image Include="Objects\nanosuit\leg_showroom_spec.png" />
+    <Image Include="Objects\nanosuit_reflection\arm_dif.png" />
+    <Image Include="Objects\nanosuit_reflection\arm_showroom_ddn.png" />
+    <Image Include="Objects\nanosuit_reflection\arm_showroom_refl.png" />
+    <Image Include="Objects\nanosuit_reflection\arm_showroom_spec.png" />
+    <Image Include="Objects\nanosuit_reflection\body_dif.png" />
+    <Image Include="Objects\nanosuit_reflection\body_showroom_ddn.png" />
+    <Image Include="Objects\nanosuit_reflection\body_showroom_refl.png" />
+    <Image Include="Objects\nanosuit_reflection\body_showroom_spec.png" />
+    <Image Include="Objects\nanosuit_reflection\glass_ddn.png" />
+    <Image Include="Objects\nanosuit_reflection\glass_dif.png" />
+    <Image Include="Objects\nanosuit_reflection\glass_refl.png" />
+    <Image Include="Objects\nanosuit_reflection\hand_dif.png" />
+    <Image Include="Objects\nanosuit_reflection\hand_showroom_ddn.png" />
+    <Image Include="Objects\nanosuit_reflection\hand_showroom_refl.png" />
+    <Image Include="Objects\nanosuit_reflection\hand_showroom_spec.png" />
+    <Image Include="Objects\nanosuit_reflection\helmet_diff.png" />
+    <Image Include="Objects\nanosuit_reflection\helmet_showroom_ddn.png" />
+    <Image Include="Objects\nanosuit_reflection\helmet_showroom_refl.png" />
+    <Image Include="Objects\nanosuit_reflection\helmet_showroom_spec.png" />
+    <Image Include="Objects\nanosuit_reflection\leg_dif.png" />
+    <Image Include="Objects\nanosuit_reflection\leg_showroom_ddn.png" />
+    <Image Include="Objects\nanosuit_reflection\leg_showroom_refl.png" />
+    <Image Include="Objects\nanosuit_reflection\leg_showroom_spec.png" />
     <Image Include="Textures\awesomeface.png" />
     <Image Include="Textures\blending_transparent_window.png" />
     <Image Include="Textures\container2.png" />
@@ -229,6 +256,7 @@
   </ItemGroup>
   <ItemGroup>
     <Text Include="Objects\nanosuit\LICENSE.txt" />
+    <Text Include="Objects\nanosuit_reflection\LICENSE.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

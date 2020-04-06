@@ -11,6 +11,7 @@
 
 #include "Shader.h"
 #include "Camera.h"
+#include "Model.h"
 
 void frame_buffer_size_callback(GLFWwindow* window, int width, int height);
 
@@ -94,57 +95,16 @@ int main()
 
 	/* build and compile our shader program */
 	// ------------------------------
-	const Shader shader("Shaders/6.3.cubemaps.vs", "Shaders/6.3.cubemaps.fs");
+	const Shader shader("Shaders/6.4.model.vs", "Shaders/6.4.model.fs");
 
 	const Shader skyboxShader("Shaders/6.1.skybox.vs", "Shaders/6.1.skybox.fs");
 
+	/* load models */
+	// ------------------------------
+	const Model ourModel("Objects/nanosuit_reflection/nanosuit.obj");
+
 	/* set up vertex data (and buffer(s)) and configure vertex attributes */
 	// ------------------------------
-	float cubeVertices[] = {
-		/* positions */ /* normals */
-		-0.5f, -0.5f, -0.5f, 0.0f, 0.0f, -1.0f,
-		0.5f, -0.5f, -0.5f, 0.0f, 0.0f, -1.0f,
-		0.5f, 0.5f, -0.5f, 0.0f, 0.0f, -1.0f,
-		0.5f, 0.5f, -0.5f, 0.0f, 0.0f, -1.0f,
-		-0.5f, 0.5f, -0.5f, 0.0f, 0.0f, -1.0f,
-		-0.5f, -0.5f, -0.5f, 0.0f, 0.0f, -1.0f,
-
-		-0.5f, -0.5f, 0.5f, 0.0f, 0.0f, 1.0f,
-		0.5f, -0.5f, 0.5f, 0.0f, 0.0f, 1.0f,
-		0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 1.0f,
-		0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 1.0f,
-		-0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 1.0f,
-		-0.5f, -0.5f, 0.5f, 0.0f, 0.0f, 1.0f,
-
-		-0.5f, 0.5f, 0.5f, -1.0f, 0.0f, 0.0f,
-		-0.5f, 0.5f, -0.5f, -1.0f, 0.0f, 0.0f,
-		-0.5f, -0.5f, -0.5f, -1.0f, 0.0f, 0.0f,
-		-0.5f, -0.5f, -0.5f, -1.0f, 0.0f, 0.0f,
-		-0.5f, -0.5f, 0.5f, -1.0f, 0.0f, 0.0f,
-		-0.5f, 0.5f, 0.5f, -1.0f, 0.0f, 0.0f,
-
-		0.5f, 0.5f, 0.5f, 1.0f, 0.0f, 0.0f,
-		0.5f, 0.5f, -0.5f, 1.0f, 0.0f, 0.0f,
-		0.5f, -0.5f, -0.5f, 1.0f, 0.0f, 0.0f,
-		0.5f, -0.5f, -0.5f, 1.0f, 0.0f, 0.0f,
-		0.5f, -0.5f, 0.5f, 1.0f, 0.0f, 0.0f,
-		0.5f, 0.5f, 0.5f, 1.0f, 0.0f, 0.0f,
-
-		-0.5f, -0.5f, -0.5f, 0.0f, -1.0f, 0.0f,
-		0.5f, -0.5f, -0.5f, 0.0f, -1.0f, 0.0f,
-		0.5f, -0.5f, 0.5f, 0.0f, -1.0f, 0.0f,
-		0.5f, -0.5f, 0.5f, 0.0f, -1.0f, 0.0f,
-		-0.5f, -0.5f, 0.5f, 0.0f, -1.0f, 0.0f,
-		-0.5f, -0.5f, -0.5f, 0.0f, -1.0f, 0.0f,
-
-		-0.5f, 0.5f, -0.5f, 0.0f, 1.0f, 0.0f,
-		0.5f, 0.5f, -0.5f, 0.0f, 1.0f, 0.0f,
-		0.5f, 0.5f, 0.5f, 0.0f, 1.0f, 0.0f,
-		0.5f, 0.5f, 0.5f, 0.0f, 1.0f, 0.0f,
-		-0.5f, 0.5f, 0.5f, 0.0f, 1.0f, 0.0f,
-		-0.5f, 0.5f, -0.5f, 0.0f, 1.0f, 0.0f
-	};
-
 	float skyboxVertices[] = {
 		/* positions */
 		-1.0f, 1.0f, -1.0f,
@@ -190,27 +150,6 @@ int main()
 		1.0f, -1.0f, 1.0f
 	};
 
-	/* cube VAO */
-	unsigned int cubeVAO, cubeVBO;
-
-	glGenVertexArrays(1, &cubeVAO);
-
-	glGenBuffers(1, &cubeVBO);
-
-	glBindVertexArray(cubeVAO);
-
-	glBindBuffer(GL_ARRAY_BUFFER, cubeVBO);
-
-	glBufferData(GL_ARRAY_BUFFER, sizeof(cubeVertices), &cubeVertices, GL_STATIC_DRAW);
-
-	glEnableVertexAttribArray(0);
-
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), static_cast<void*>(nullptr));
-
-	glEnableVertexAttribArray(1);
-
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), reinterpret_cast<void*>(3 * sizeof(float)));
-
 	/* skybox VAO */
 	unsigned int skyboxVAO, skyboxVBO;
 
@@ -240,17 +179,7 @@ int main()
 		"Textures/skybox/back.jpg"
 	};
 
-	const auto cubemapTexture = loadCubemap(faces);
-
-	/* shader configuration */
-	// ------------------------------
-	shader.use();
-
-	shader.setInt("skybox", 0);
-
-	skyboxShader.use();
-
-	skyboxShader.setInt("skybox", 0);
+	const auto skyboxTexture = loadCubemap(faces);
 
 	/* render loop */
 	// ------------------------------
@@ -273,10 +202,14 @@ int main()
 
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		/* draw scene as normal */
+		/* render the loaded model */
 		shader.use();
 
 		auto model = glm::mat4(1.0f);
+
+		model = translate(model, glm::vec3(0.f, -1.75f, 0.f));
+
+		model = scale(model, glm::vec3(0.2f, 0.2f, 0.2f));
 
 		auto view = camera.GetViewMatrix();
 
@@ -292,16 +225,13 @@ int main()
 
 		shader.setVec3("cameraPos", camera.Position);
 
-		/* cubes */
-		glBindVertexArray(cubeVAO);
+		glActiveTexture(GL_TEXTURE3);
 
-		glActiveTexture(GL_TEXTURE0);
+		shader.setInt("skybox", 3);
 
-		glBindTexture(GL_TEXTURE_CUBE_MAP, cubemapTexture);
+		glBindTexture(GL_TEXTURE_CUBE_MAP, skyboxTexture);
 
-		glDrawArrays(GL_TRIANGLES, 0, 36);
-
-		glBindVertexArray(0);
+		ourModel.Draw(shader);
 
 		/* draw skybox as last */
 		/* change depth function so depth test passes when values are equal to depth buffer's content */
@@ -321,7 +251,9 @@ int main()
 
 		glActiveTexture(GL_TEXTURE0);
 
-		glBindTexture(GL_TEXTURE_CUBE_MAP, cubemapTexture);
+		skyboxShader.setInt("skybox", 0);
+
+		glBindTexture(GL_TEXTURE_CUBE_MAP, skyboxTexture);
 
 		glDrawArrays(GL_TRIANGLES, 0, 36);
 
@@ -339,11 +271,7 @@ int main()
 
 	/* optional: de-allocate all resources once they've outlived their purpose: */
 	// ------------------------------
-	glDeleteVertexArrays(1, &cubeVAO);
-
 	glDeleteVertexArrays(1, &skyboxVAO);
-
-	glDeleteBuffers(1, &cubeVBO);
 
 	glDeleteBuffers(1, &skyboxVAO);
 

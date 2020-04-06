@@ -26,6 +26,8 @@ void Mesh::Draw(const Shader& shader) const
 
 	unsigned int heightNr = 0;
 
+	unsigned int reflectionNr = 0;
+
 	for (auto i = 0u; i < textures.size(); ++i)
 	{
 		/* active proper texture unit before binding */
@@ -55,6 +57,11 @@ void Mesh::Draw(const Shader& shader) const
 		{
 			/* transfer unsigned int to stream */
 			name = std::to_string(heightNr++);
+		}
+		else if (name == "texture_reflection")
+		{
+			/* transfer unsigned int to stream */
+			name = std::to_string(reflectionNr++);
 		}
 
 		/* now set the sampler to the correct texture unit */

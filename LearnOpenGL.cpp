@@ -94,7 +94,7 @@ int main()
 
 	/* build and compile our shader program */
 	// ------------------------------
-	const Shader shader("Shaders/6.2.cubemaps.vs", "Shaders/6.2.cubemaps.fs");
+	const Shader shader("Shaders/6.3.cubemaps.vs", "Shaders/6.3.cubemaps.fs");
 
 	const Shader skyboxShader("Shaders/6.1.skybox.vs", "Shaders/6.1.skybox.fs");
 

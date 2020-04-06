@@ -189,6 +189,8 @@
     <None Include="Shaders\6.1.skybox.vs" />
     <None Include="Shaders\6.2.cubemaps.fs" />
     <None Include="Shaders\6.2.cubemaps.vs" />
+    <None Include="Shaders\6.3.cubemaps.fs" />
+    <None Include="Shaders\6.3.cubemaps.vs" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Images\container.jpg" />

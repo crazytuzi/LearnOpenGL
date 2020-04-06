@@ -183,6 +183,10 @@
     <None Include="Shaders\5.1.framebuffers.vs" />
     <None Include="Shaders\5.1.framebuffers_screen.fs" />
     <None Include="Shaders\5.1.framebuffers_screen.vs" />
+    <None Include="Shaders\6.1.cubemaps.fs" />
+    <None Include="Shaders\6.1.cubemaps.vs" />
+    <None Include="Shaders\6.1.skybox.fs" />
+    <None Include="Shaders\6.1.skybox.vs" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Images\container.jpg" />
@@ -212,6 +216,12 @@
     <Image Include="Textures\lighting_maps_specular_color.png" />
     <Image Include="Textures\marble.jpg" />
     <Image Include="Textures\metal.png" />
+    <Image Include="Textures\skybox\back.jpg" />
+    <Image Include="Textures\skybox\bottom.jpg" />
+    <Image Include="Textures\skybox\front.jpg" />
+    <Image Include="Textures\skybox\left.jpg" />
+    <Image Include="Textures\skybox\right.jpg" />
+    <Image Include="Textures\skybox\top.jpg" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="Objects\nanosuit\LICENSE.txt" />

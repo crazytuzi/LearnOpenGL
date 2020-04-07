@@ -169,6 +169,21 @@
     <None Include="Objects\nanosuit_reflection\nanosuit.mtl">
       <Filter>Resource Files\Objects\nanosuit_reflection</Filter>
     </None>
+    <None Include="Shaders\8.advanced_glsl.vs">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="Shaders\8.red.fs">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="Shaders\8.green.fs">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="Shaders\8.blue.fs">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="Shaders\8.yellow.fs">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Images\wall.jpg">

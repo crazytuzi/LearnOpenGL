@@ -71,9 +71,9 @@ int main()
 
 	glfwMakeContextCurrent(window);
 
-	glfwSetFramebufferSizeCallback(window, frame_buffer_size_callback);
+	// glfwSetFramebufferSizeCallback(window, frame_buffer_size_callback);
 
-	glfwSetCursorPosCallback(window, mouse_callback);
+	// glfwSetCursorPosCallback(window, mouse_callback);
 
 	// glfwSetScrollCallback(window, scroll_callback);
 
@@ -94,120 +94,41 @@ int main()
 
 	/* build and compile our shader program */
 	// ------------------------------
-	const Shader shaderRed("Shaders/8.advanced_glsl.vs", "Shaders/8.red.fs");
-
-	const Shader shaderGreen("Shaders/8.advanced_glsl.vs", "Shaders/8.green.fs");
-
-	const Shader shaderBlue("Shaders/8.advanced_glsl.vs", "Shaders/8.blue.fs");
-
-	const Shader shaderYellow("Shaders/8.advanced_glsl.vs", "Shaders/8.yellow.fs");
+	const Shader shader("Shaders/9.1.geometry_shader.vs", "Shaders/9.1.geometry_shader.fs",
+	                    "Shaders/9.1.geometry_shader.gs");
 
 	/* set up vertex data (and buffer(s)) and configure vertex attributes */
 	// ------------------------------
-	float cubeVertices[] = {
-		/* positions */
-		-0.5f, -0.5f, -0.5f,
-		0.5f, -0.5f, -0.5f,
-		0.5f, 0.5f, -0.5f,
-		0.5f, 0.5f, -0.5f,
-		-0.5f, 0.5f, -0.5f,
-		-0.5f, -0.5f, -0.5f,
-
-		-0.5f, -0.5f, 0.5f,
-		0.5f, -0.5f, 0.5f,
-		0.5f, 0.5f, 0.5f,
-		0.5f, 0.5f, 0.5f,
-		-0.5f, 0.5f, 0.5f,
-		-0.5f, -0.5f, 0.5f,
-
-		-0.5f, 0.5f, 0.5f,
-		-0.5f, 0.5f, -0.5f,
-		-0.5f, -0.5f, -0.5f,
-		-0.5f, -0.5f, -0.5f,
-		-0.5f, -0.5f, 0.5f,
-		-0.5f, 0.5f, 0.5f,
-
-		0.5f, 0.5f, 0.5f,
-		0.5f, 0.5f, -0.5f,
-		0.5f, -0.5f, -0.5f,
-		0.5f, -0.5f, -0.5f,
-		0.5f, -0.5f, 0.5f,
-		0.5f, 0.5f, 0.5f,
-
-		-0.5f, -0.5f, -0.5f,
-		0.5f, -0.5f, -0.5f,
-		0.5f, -0.5f, 0.5f,
-		0.5f, -0.5f, 0.5f,
-		-0.5f, -0.5f, 0.5f,
-		-0.5f, -0.5f, -0.5f,
-
-		-0.5f, 0.5f, -0.5f,
-		0.5f, 0.5f, -0.5f,
-		0.5f, 0.5f, 0.5f,
-		0.5f, 0.5f, 0.5f,
-		-0.5f, 0.5f, 0.5f,
-		-0.5f, 0.5f, -0.5f,
+	float points[] = {
+		-0.5f, 0.5f, 1.0f, 0.0f, 0.0f, /* top-left */
+		0.5f, 0.5f, 0.0f, 1.0f, 0.0f, /* top-right */
+		0.5f, -0.5f, 0.0f, 0.0f, 1.0f, /* bottom-right */
+		-0.5f, -0.5f, 1.0f, 1.0f, 0.0f /* bottom-left */
 	};
 
-	/* cube VAO */
-	unsigned int cubeVAO, cubeVBO;
+	unsigned int VAO, VBO;
 
-	glGenVertexArrays(1, &cubeVAO);
+	glGenVertexArrays(1, &VAO);
 
-	glGenBuffers(1, &cubeVBO);
+	glGenBuffers(1, &VBO);
 
-	glBindVertexArray(cubeVAO);
+	glBindVertexArray(VAO);
 
-	glBindBuffer(GL_ARRAY_BUFFER, cubeVBO);
+	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 
-	glBufferData(GL_ARRAY_BUFFER, sizeof(cubeVertices), &cubeVertices, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(points), &points, GL_STATIC_DRAW);
 
 	glEnableVertexAttribArray(0);
 
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), static_cast<void*>(nullptr));
+	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), static_cast<void*>(nullptr));
 
-	/* configure a uniform buffer object */
-	// ------------------------------
-	/* first. We get the relevant block indices */
-	const auto uniformBlockIndexRed = glGetUniformBlockIndex(shaderRed.ID, "Matrices");
+	glEnableVertexAttribArray(1);
 
-	const auto uniformBlockIndexGreen = glGetUniformBlockIndex(shaderGreen.ID, "Matrices");
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float),
+	                      reinterpret_cast<void*>(2 * sizeof(float)));
 
-	const auto uniformBlockIndexBlue = glGetUniformBlockIndex(shaderBlue.ID, "Matrices");
+	glBindVertexArray(0);
 
-	const auto uniformBlockIndexYellow = glGetUniformBlockIndex(shaderYellow.ID, "Matrices");
-
-	/* then we link each shader's uniform block to this uniform binding point */
-	glUniformBlockBinding(shaderRed.ID, uniformBlockIndexRed, 0);
-
-	glUniformBlockBinding(shaderGreen.ID, uniformBlockIndexGreen, 0);
-
-	glUniformBlockBinding(shaderBlue.ID, uniformBlockIndexBlue, 0);
-
-	glUniformBlockBinding(shaderYellow.ID, uniformBlockIndexYellow, 0);
-
-	/* Now actually create the buffer */
-	unsigned int uboMatrices;
-
-	glGenBuffers(1, &uboMatrices);
-
-	glBindBuffer(GL_UNIFORM_BUFFER, uboMatrices);
-
-	glBufferData(GL_UNIFORM_BUFFER, 2 * sizeof(glm::mat4), nullptr, GL_STATIC_DRAW);
-
-	glBindBuffer(GL_UNIFORM_BUFFER, 0);
-
-	/* define the range of the buffer that links to a uniform binding point */
-	glBindBufferRange(GL_UNIFORM_BUFFER, 0, uboMatrices, 0, 2 * sizeof(glm::mat4));
-
-	/* store the projection matrix (we only do this once now) (note: we're not using zoom anymore by changing the FoV) */
-	auto projection = glm::perspective(45.f, static_cast<float>(scr_with) / scr_height, 0.1f, 100.f);
-
-	glBindBuffer(GL_UNIFORM_BUFFER, uboMatrices);
-
-	glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(glm::mat4), value_ptr(projection));
-
-	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
 	/* render loop */
 	// ------------------------------
@@ -230,66 +151,12 @@ int main()
 
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		/* set the view and projection matrix in the uniform block - we only have to do this once per loop iteration. */
-		auto view = camera.GetViewMatrix();
+		/* draw points */
+		shader.use();
 
-		glBindBuffer(GL_UNIFORM_BUFFER, uboMatrices);
+		glBindVertexArray(VAO);
 
-		glBufferSubData(GL_UNIFORM_BUFFER, sizeof(glm::mat4), sizeof(glm::mat4), value_ptr(view));
-
-		glBindBuffer(GL_UNIFORM_BUFFER, 0);
-
-		/* draw 4 cubes  */
-		// ------------------------------
-		/* RED */
-		glBindVertexArray(cubeVAO);
-
-		shaderRed.use();
-
-		auto model = glm::mat4(1.f);
-
-		/* move top-left */
-		model = translate(model, glm::vec3(-0.75f, 0.75f, 0.f));
-
-		shaderRed.setMat4("model", model);
-
-		glDrawArrays(GL_TRIANGLES, 0, 36);
-
-		/* GREEN */
-		shaderGreen.use();
-
-		model = glm::mat4(1.f);
-
-		/* move top-right */
-		model = translate(model, glm::vec3(0.75f, 0.75f, 0.f));
-
-		shaderGreen.setMat4("model", model);
-
-		glDrawArrays(GL_TRIANGLES, 0, 36);
-
-		/* YELLOW */
-		shaderYellow.use();
-
-		model = glm::mat4(1.f);
-
-		/* move bottom-left */
-		model = translate(model, glm::vec3(-0.75f, -0.75f, 0.f));
-
-		shaderYellow.setMat4("model", model);
-
-		glDrawArrays(GL_TRIANGLES, 0, 36);
-
-		/* BLUE */
-		shaderBlue.use();
-
-		model = glm::mat4(1.f);
-
-		/* move bottom-right */
-		model = translate(model, glm::vec3(0.75f, -0.75f, 0.f));
-
-		shaderBlue.setMat4("model", model);
-
-		glDrawArrays(GL_TRIANGLES, 0, 36);
+		glDrawArrays(GL_POINTS, 0, 4);
 
 		/* glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.) */
 		// ------------------------------
@@ -300,9 +167,9 @@ int main()
 
 	/* optional: de-allocate all resources once they've outlived their purpose: */
 	// ------------------------------
-	glDeleteVertexArrays(1, &cubeVAO);
+	glDeleteVertexArrays(1, &VAO);
 
-	glDeleteBuffers(1, &cubeVBO);
+	glDeleteBuffers(1, &VBO);
 
 	/* glfw: terminate, clearing all previously allocated GLFW resources. */
 	// ------------------------------

@@ -200,6 +200,9 @@
     <None Include="Shaders\8.green.fs" />
     <None Include="Shaders\8.red.fs" />
     <None Include="Shaders\8.yellow.fs" />
+    <None Include="Shaders\9.1.geometry_shader.fs" />
+    <None Include="Shaders\9.1.geometry_shader.gs" />
+    <None Include="Shaders\9.1.geometry_shader.vs" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Images\container.jpg" />

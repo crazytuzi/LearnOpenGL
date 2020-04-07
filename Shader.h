@@ -14,7 +14,7 @@ public:
 	unsigned int ID;
 
 	/* constructor generates the shader on the fly */
-	Shader(const GLchar* vertexPath, const GLchar* fragmentPath);
+	Shader(const GLchar* vertexPath, const GLchar* fragmentPath, const char* geometryPath = nullptr);
 
 	/* activate the shader */
 	void use() const;

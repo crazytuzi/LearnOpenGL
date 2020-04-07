@@ -193,6 +193,15 @@
     <None Include="Shaders\9.1.geometry_shader.vs">
       <Filter>Resource Files\Shaders</Filter>
     </None>
+    <None Include="Shaders\9.2.geometry_shader.fs">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="Shaders\9.2.geometry_shader.gs">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="Shaders\9.2.geometry_shader.vs">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Images\wall.jpg">

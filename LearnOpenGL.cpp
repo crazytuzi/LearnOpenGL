@@ -11,6 +11,7 @@
 
 #include "Shader.h"
 #include "Camera.h"
+#include "Model.h"
 
 void frame_buffer_size_callback(GLFWwindow* window, int width, int height);
 
@@ -71,11 +72,11 @@ int main()
 
 	glfwMakeContextCurrent(window);
 
-	// glfwSetFramebufferSizeCallback(window, frame_buffer_size_callback);
+	glfwSetFramebufferSizeCallback(window, frame_buffer_size_callback);
 
-	// glfwSetCursorPosCallback(window, mouse_callback);
+	glfwSetCursorPosCallback(window, mouse_callback);
 
-	// glfwSetScrollCallback(window, scroll_callback);
+	glfwSetScrollCallback(window, scroll_callback);
 
 	/* tell GLFW to capture our mouse */
 	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
@@ -94,41 +95,12 @@ int main()
 
 	/* build and compile our shader program */
 	// ------------------------------
-	const Shader shader("Shaders/9.1.geometry_shader.vs", "Shaders/9.1.geometry_shader.fs",
-	                    "Shaders/9.1.geometry_shader.gs");
+	const Shader shader("Shaders/9.2.geometry_shader.vs", "Shaders/9.2.geometry_shader.fs",
+	                    "Shaders/9.2.geometry_shader.gs");
 
-	/* set up vertex data (and buffer(s)) and configure vertex attributes */
+	/* load models */
 	// ------------------------------
-	float points[] = {
-		-0.5f, 0.5f, 1.0f, 0.0f, 0.0f, /* top-left */
-		0.5f, 0.5f, 0.0f, 1.0f, 0.0f, /* top-right */
-		0.5f, -0.5f, 0.0f, 0.0f, 1.0f, /* bottom-right */
-		-0.5f, -0.5f, 1.0f, 1.0f, 0.0f /* bottom-left */
-	};
-
-	unsigned int VAO, VBO;
-
-	glGenVertexArrays(1, &VAO);
-
-	glGenBuffers(1, &VBO);
-
-	glBindVertexArray(VAO);
-
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-
-	glBufferData(GL_ARRAY_BUFFER, sizeof(points), &points, GL_STATIC_DRAW);
-
-	glEnableVertexAttribArray(0);
-
-	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), static_cast<void*>(nullptr));
-
-	glEnableVertexAttribArray(1);
-
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float),
-	                      reinterpret_cast<void*>(2 * sizeof(float)));
-
-	glBindVertexArray(0);
-
+	Model nanosuit("Objects/nanosuit/nanosuit.obj");
 
 	/* render loop */
 	// ------------------------------
@@ -151,12 +123,30 @@ int main()
 
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		/* draw points */
+		/* configure transformation matrices */
+		auto projection = glm::perspective(glm::radians(45.f), static_cast<float>(scr_with) / scr_height, 1.f, 100.f);
+
+		auto view = camera.GetViewMatrix();
+
+		auto model = glm::mat4(1.f);
+
+		model = translate(model, glm::vec3(0.f, -1.75f, 0.f));
+
+		model = scale(model, glm::vec3(0.2f, 0.2f, 0.2f));
+
 		shader.use();
 
-		glBindVertexArray(VAO);
+		shader.setMat4("projection", projection);
 
-		glDrawArrays(GL_POINTS, 0, 4);
+		shader.setMat4("view", view);
+
+		shader.setMat4("model", model);
+
+		/* add time component to geometry shader in the form of a uniform */
+		shader.setFloat("time", glfwGetTime());
+
+		/* draw model */
+		nanosuit.Draw(shader);
 
 		/* glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.) */
 		// ------------------------------
@@ -164,12 +154,6 @@ int main()
 
 		glfwPollEvents();
 	}
-
-	/* optional: de-allocate all resources once they've outlived their purpose: */
-	// ------------------------------
-	glDeleteVertexArrays(1, &VAO);
-
-	glDeleteBuffers(1, &VBO);
 
 	/* glfw: terminate, clearing all previously allocated GLFW resources. */
 	// ------------------------------

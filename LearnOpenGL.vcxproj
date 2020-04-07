@@ -206,6 +206,11 @@
     <None Include="Shaders\9.2.geometry_shader.fs" />
     <None Include="Shaders\9.2.geometry_shader.gs" />
     <None Include="Shaders\9.2.geometry_shader.vs" />
+    <None Include="Shaders\9.3.default.fs" />
+    <None Include="Shaders\9.3.default.vs" />
+    <None Include="Shaders\9.3.normal_visualization.fs" />
+    <None Include="Shaders\9.3.normal_visualization.gs" />
+    <None Include="Shaders\9.3.normal_visualization.vs" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Images\container.jpg" />

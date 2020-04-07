@@ -95,12 +95,14 @@ int main()
 
 	/* build and compile our shader program */
 	// ------------------------------
-	const Shader shader("Shaders/9.2.geometry_shader.vs", "Shaders/9.2.geometry_shader.fs",
-	                    "Shaders/9.2.geometry_shader.gs");
+	const Shader shader("Shaders/9.3.default.vs", "Shaders/9.3.default.fs");
+
+	const Shader normalShader("Shaders/9.3.normal_visualization.vs", "Shaders/9.3.normal_visualization.fs",
+	                          "Shaders/9.3.normal_visualization.gs");
 
 	/* load models */
 	// ------------------------------
-	Model nanosuit("Objects/nanosuit/nanosuit.obj");
+	const Model nanosuit("Objects/nanosuit/nanosuit.obj");
 
 	/* render loop */
 	// ------------------------------
@@ -142,11 +144,19 @@ int main()
 
 		shader.setMat4("model", model);
 
-		/* add time component to geometry shader in the form of a uniform */
-		shader.setFloat("time", glfwGetTime());
-
 		/* draw model */
 		nanosuit.Draw(shader);
+
+		/* then draw model with normal visualizing geometry shader */
+		normalShader.use();
+
+		normalShader.setMat4("projection", projection);
+
+		normalShader.setMat4("view", view);
+
+		normalShader.setMat4("model", model);
+
+		nanosuit.Draw(normalShader);
 
 		/* glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.) */
 		// ------------------------------

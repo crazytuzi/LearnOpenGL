@@ -202,6 +202,21 @@
     <None Include="Shaders\9.2.geometry_shader.vs">
       <Filter>Resource Files\Shaders</Filter>
     </None>
+    <None Include="Shaders\9.3.default.fs">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="Shaders\9.3.default.vs">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="Shaders\9.3.normal_visualization.fs">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="Shaders\9.3.normal_visualization.gs">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="Shaders\9.3.normal_visualization.vs">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Images\wall.jpg">

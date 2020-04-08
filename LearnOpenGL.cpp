@@ -31,7 +31,7 @@ const auto scr_with = 1280;
 const auto scr_height = 720;
 
 /* camera */
-Camera camera(glm::vec3(0.f, 0.f, 55.f));
+Camera camera(glm::vec3(0.f, 0.f, 155.f));
 
 auto lastX = scr_with / 2.f;
 
@@ -95,7 +95,9 @@ int main()
 
 	/* build and compile our shader program */
 	// ------------------------------
-	const Shader shader("Shaders/10.2.instancing.vs", "Shaders/10.2.instancing.fs");
+	const Shader asteroidShader("Shaders/10.3.asteroids.vs", "Shaders/10.3.asteroids.fs");
+
+	const Shader planetShader("Shaders/10.3.planet.vs", "Shaders/10.3.planet.fs");
 
 	/* load models */
 	// ------------------------------
@@ -105,16 +107,16 @@ int main()
 
 	/* generate a large list of semi-random model transformation matrices */
 	// ------------------------------
-	const auto amount = 1000u;
+	const auto amount = 10000u;
 
 	const auto modelMatrices = new glm::mat4[amount];
 
 	/* initialize random seed */
 	srand(glfwGetTime());
 
-	const auto radius = 50.f;
+	const auto radius = 150.f;
 
-	const auto offset = 2.5f;
+	const auto offset = 25.f;
 
 	for (auto i = 0u; i < amount; ++i)
 	{
@@ -152,6 +154,57 @@ int main()
 		modelMatrices[i] = model;
 	}
 
+	/* configure instanced array */
+	// ------------------------------
+	unsigned int buffer;
+
+	glGenBuffers(1, &buffer);
+
+	glBindBuffer(GL_ARRAY_BUFFER, buffer);
+
+	glBufferData(GL_ARRAY_BUFFER, amount * sizeof(glm::mat4), &modelMatrices[0], GL_STATIC_DRAW);
+
+	/*
+	 * set transformation matrices as an instance vertex attribute (with divisor 1)
+	 * note: we're cheating a little by taking the, now publicly declared, VAO of the model's mesh(es) and adding new vertexAttribPointers
+	 * normally you'd want to do this in a more organized fashion, but for learning purposes this will do.
+	 */
+	for (const auto& mesh : rock.meshes)
+	{
+		const auto VAO = mesh.VAO;
+
+		glBindVertexArray(VAO);
+
+		/* set attribute pointers for matrix (4 times vec4) */
+		glEnableVertexAttribArray(3);
+
+		glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), static_cast<void*>(nullptr));
+
+		glEnableVertexAttribArray(4);
+
+		glVertexAttribPointer(4, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), reinterpret_cast<void*>(sizeof(glm::vec4)));
+
+		glEnableVertexAttribArray(5);
+
+		glVertexAttribPointer(5, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4),
+		                      reinterpret_cast<void*>(2 * sizeof(glm::vec4)));
+
+		glEnableVertexAttribArray(6);
+
+		glVertexAttribPointer(6, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4),
+		                      reinterpret_cast<void*>(3 * sizeof(glm::vec4)));
+
+		glVertexAttribDivisor(3, 1);
+
+		glVertexAttribDivisor(4, 1);
+
+		glVertexAttribDivisor(5, 1);
+
+		glVertexAttribDivisor(6, 1);
+
+		glBindVertexArray(0);
+	}
+
 	/* render loop */
 	// ------------------------------
 	while (!glfwWindowShouldClose(window))
@@ -174,15 +227,21 @@ int main()
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		/* configure transformation matrices */
-		auto projection = glm::perspective(glm::radians(45.f), static_cast<float>(scr_with) / scr_height, 0.1f, 100.f);
+		auto projection = glm::perspective(glm::radians(45.f), static_cast<float>(scr_with) / scr_height, 0.1f, 1000.f);
 
 		auto view = camera.GetViewMatrix();
 
-		shader.use();
+		asteroidShader.use();
 
-		shader.setMat4("projection", projection);
+		asteroidShader.setMat4("projection", projection);
 
-		shader.setMat4("view", view);
+		asteroidShader.setMat4("view", view);
+
+		planetShader.use();
+
+		planetShader.setMat4("projection", projection);
+
+		planetShader.setMat4("view", view);
 
 		/* draw planet */
 		auto model = glm::mat4(1.f);
@@ -191,16 +250,27 @@ int main()
 
 		model = scale(model, glm::vec3(4.f, 4.f, 4.f));
 
-		shader.setMat4("model", model);
+		planetShader.setMat4("model", model);
 
-		planet.Draw(shader);
+		planet.Draw(planetShader);
 
 		/* draw meteorites */
-		for (auto i = 0u; i < amount; ++i)
-		{
-			shader.setMat4("model", modelMatrices[i]);
+		asteroidShader.use();
 
-			rock.Draw(shader);
+		asteroidShader.setInt("texture_diffuse0", 0);
+
+		glActiveTexture(GL_TEXTURE0);
+
+		/* note: we also made the textures_loaded vector public (instead of private) from the model class. */
+		glBindTexture(GL_TEXTURE_2D, rock.textures_loaded[0].id);
+
+		for (const auto& mesh : rock.meshes)
+		{
+			glBindVertexArray(mesh.VAO);
+
+			glDrawElementsInstanced(GL_TRIANGLES, mesh.indices.size(), GL_UNSIGNED_INT, nullptr, amount);
+
+			glBindVertexArray(0);
 		}
 
 		/* glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.) */

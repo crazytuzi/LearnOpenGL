@@ -241,6 +241,18 @@
     <None Include="Objects\planet\planet.mtl">
       <Filter>Resource Files\Objects\planet</Filter>
     </None>
+    <None Include="Shaders\10.3.asteroids.fs">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="Shaders\10.3.asteroids.vs">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="Shaders\10.3.planet.fs">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="Shaders\10.3.planet.vs">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Images\wall.jpg">

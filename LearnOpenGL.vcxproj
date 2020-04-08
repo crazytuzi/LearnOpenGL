@@ -180,6 +180,10 @@
     <None Include="Shaders\10.1.instancing.vs" />
     <None Include="Shaders\10.2.instancing.fs" />
     <None Include="Shaders\10.2.instancing.vs" />
+    <None Include="Shaders\10.3.asteroids.fs" />
+    <None Include="Shaders\10.3.asteroids.vs" />
+    <None Include="Shaders\10.3.planet.fs" />
+    <None Include="Shaders\10.3.planet.vs" />
     <None Include="Shaders\2.stencil_single_color.fs" />
     <None Include="Shaders\2.stencil_testing.fs" />
     <None Include="Shaders\2.stencil_testing.vs" />

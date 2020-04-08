@@ -31,7 +31,7 @@ const auto scr_with = 1280;
 const auto scr_height = 720;
 
 /* camera */
-Camera camera(glm::vec3(0.f, 0.f, 155.f));
+Camera camera(glm::vec3(0.f, 0.f, 3.f));
 
 auto lastX = scr_with / 2.f;
 
@@ -56,6 +56,8 @@ int main()
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+
+	glfwWindowHint(GLFW_SAMPLES, 4);
 
 	/* glfw: window creation */
 	// ------------------------------
@@ -93,117 +95,78 @@ int main()
 	// ------------------------------
 	glEnable(GL_DEPTH_TEST);
 
+	/* Enabled by default on some drivers, but not all so always enable to make sure */
+	glEnable(GL_MULTISAMPLE);
+
 	/* build and compile our shader program */
 	// ------------------------------
-	const Shader asteroidShader("Shaders/10.3.asteroids.vs", "Shaders/10.3.asteroids.fs");
+	const Shader shader("Shaders/advanced.vs", "Shaders/advanced.fs");
 
-	const Shader planetShader("Shaders/10.3.planet.vs", "Shaders/10.3.planet.fs");
-
-	/* load models */
+	/*  Set the object data (buffers, vertex attributes) */
 	// ------------------------------
-	const Model rock("Objects/rock/rock.obj");
+	float cubeVertices[] = {
+		/* Positions */
+		-0.5f, -0.5f, -0.5f,
+		0.5f, -0.5f, -0.5f,
+		0.5f, 0.5f, -0.5f,
+		0.5f, 0.5f, -0.5f,
+		-0.5f, 0.5f, -0.5f,
+		-0.5f, -0.5f, -0.5f,
 
-	const Model planet("Objects/planet/planet.obj");
+		-0.5f, -0.5f, 0.5f,
+		0.5f, -0.5f, 0.5f,
+		0.5f, 0.5f, 0.5f,
+		0.5f, 0.5f, 0.5f,
+		-0.5f, 0.5f, 0.5f,
+		-0.5f, -0.5f, 0.5f,
 
-	/* generate a large list of semi-random model transformation matrices */
-	// ------------------------------
-	const auto amount = 10000u;
+		-0.5f, 0.5f, 0.5f,
+		-0.5f, 0.5f, -0.5f,
+		-0.5f, -0.5f, -0.5f,
+		-0.5f, -0.5f, -0.5f,
+		-0.5f, -0.5f, 0.5f,
+		-0.5f, 0.5f, 0.5f,
 
-	const auto modelMatrices = new glm::mat4[amount];
+		0.5f, 0.5f, 0.5f,
+		0.5f, 0.5f, -0.5f,
+		0.5f, -0.5f, -0.5f,
+		0.5f, -0.5f, -0.5f,
+		0.5f, -0.5f, 0.5f,
+		0.5f, 0.5f, 0.5f,
 
-	/* initialize random seed */
-	srand(glfwGetTime());
+		-0.5f, -0.5f, -0.5f,
+		0.5f, -0.5f, -0.5f,
+		0.5f, -0.5f, 0.5f,
+		0.5f, -0.5f, 0.5f,
+		-0.5f, -0.5f, 0.5f,
+		-0.5f, -0.5f, -0.5f,
 
-	const auto radius = 150.f;
+		-0.5f, 0.5f, -0.5f,
+		0.5f, 0.5f, -0.5f,
+		0.5f, 0.5f, 0.5f,
+		0.5f, 0.5f, 0.5f,
+		-0.5f, 0.5f, 0.5f,
+		-0.5f, 0.5f, -0.5f
+	};
 
-	const auto offset = 25.f;
+	/* Setup cube VAO */
+	GLuint cubeVAO, cubeVBO;
 
-	for (auto i = 0u; i < amount; ++i)
-	{
-		auto model = glm::mat4(1.f);
+	glGenVertexArrays(1, &cubeVAO);
 
-		/* 1. translation: displace along circle with 'radius' in range [-offset, offset] */
-		const auto angle = static_cast<float>(i) / amount * 360.f;
+	glGenBuffers(1, &cubeVBO);
 
-		auto displacement = rand() % static_cast<int>(2 * offset * 100) / 100.f - offset;
+	glBindVertexArray(cubeVAO);
 
-		const auto x = sin(angle) * radius + displacement;
+	glBindBuffer(GL_ARRAY_BUFFER, cubeVBO);
 
-		displacement = rand() % static_cast<int>(2 * offset * 100) / 100.f - offset;
+	glBufferData(GL_ARRAY_BUFFER, sizeof(cubeVertices), &cubeVertices, GL_STATIC_DRAW);
 
-		/* keep height of asteroid field smaller compared to width of x and z */
-		const auto y = displacement * 0.4f;
+	glEnableVertexAttribArray(0);
 
-		displacement = rand() % static_cast<int>(2 * offset * 100) / 100.f - offset;
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), static_cast<void*>(nullptr));
 
-		const auto z = cos(angle) * radius + displacement;
-
-		model = translate(model, glm::vec3(x, y, z));
-
-		/* 2. scale: Scale between 0.05 and 0.25f */
-		const auto scale = rand() % 20 / 100.f + 0.05f;
-
-		model = glm::scale(model, glm::vec3(scale));
-
-		/* 3. rotation: add random rotation around a (semi)randomly picked rotation axis vector */
-		const auto rotAngle = static_cast<float>(rand() % 360);
-
-		model = rotate(model, rotAngle, glm::vec3(0.4f, 0.6f, 0.8f));
-
-		/* 4. now add to list of matrices */
-		modelMatrices[i] = model;
-	}
-
-	/* configure instanced array */
-	// ------------------------------
-	unsigned int buffer;
-
-	glGenBuffers(1, &buffer);
-
-	glBindBuffer(GL_ARRAY_BUFFER, buffer);
-
-	glBufferData(GL_ARRAY_BUFFER, amount * sizeof(glm::mat4), &modelMatrices[0], GL_STATIC_DRAW);
-
-	/*
-	 * set transformation matrices as an instance vertex attribute (with divisor 1)
-	 * note: we're cheating a little by taking the, now publicly declared, VAO of the model's mesh(es) and adding new vertexAttribPointers
-	 * normally you'd want to do this in a more organized fashion, but for learning purposes this will do.
-	 */
-	for (const auto& mesh : rock.meshes)
-	{
-		const auto VAO = mesh.VAO;
-
-		glBindVertexArray(VAO);
-
-		/* set attribute pointers for matrix (4 times vec4) */
-		glEnableVertexAttribArray(3);
-
-		glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), static_cast<void*>(nullptr));
-
-		glEnableVertexAttribArray(4);
-
-		glVertexAttribPointer(4, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), reinterpret_cast<void*>(sizeof(glm::vec4)));
-
-		glEnableVertexAttribArray(5);
-
-		glVertexAttribPointer(5, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4),
-		                      reinterpret_cast<void*>(2 * sizeof(glm::vec4)));
-
-		glEnableVertexAttribArray(6);
-
-		glVertexAttribPointer(6, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4),
-		                      reinterpret_cast<void*>(3 * sizeof(glm::vec4)));
-
-		glVertexAttribDivisor(3, 1);
-
-		glVertexAttribDivisor(4, 1);
-
-		glVertexAttribDivisor(5, 1);
-
-		glVertexAttribDivisor(6, 1);
-
-		glBindVertexArray(0);
-	}
+	glBindVertexArray(0);
 
 	/* render loop */
 	// ------------------------------
@@ -226,52 +189,26 @@ int main()
 
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		/* configure transformation matrices */
-		auto projection = glm::perspective(glm::radians(45.f), static_cast<float>(scr_with) / scr_height, 0.1f, 1000.f);
+		/* Set transformation matrices */
+		shader.use();
+
+		auto projection = glm::perspective(glm::radians(45.f), static_cast<float>(scr_with) / scr_height, 0.1f, 100.f);
 
 		auto view = camera.GetViewMatrix();
 
-		asteroidShader.use();
-
-		asteroidShader.setMat4("projection", projection);
-
-		asteroidShader.setMat4("view", view);
-
-		planetShader.use();
-
-		planetShader.setMat4("projection", projection);
-
-		planetShader.setMat4("view", view);
-
-		/* draw planet */
 		auto model = glm::mat4(1.f);
 
-		model = translate(model, glm::vec3(0.f, -3.f, 0.f));
+		shader.setMat4("projection", projection);
 
-		model = scale(model, glm::vec3(4.f, 4.f, 4.f));
+		shader.setMat4("view", view);
 
-		planetShader.setMat4("model", model);
+		shader.setMat4("model", model);
 
-		planet.Draw(planetShader);
+		glBindVertexArray(cubeVAO);
 
-		/* draw meteorites */
-		asteroidShader.use();
+		glDrawArrays(GL_TRIANGLES, 0, 36);
 
-		asteroidShader.setInt("texture_diffuse0", 0);
-
-		glActiveTexture(GL_TEXTURE0);
-
-		/* note: we also made the textures_loaded vector public (instead of private) from the model class. */
-		glBindTexture(GL_TEXTURE_2D, rock.textures_loaded[0].id);
-
-		for (const auto& mesh : rock.meshes)
-		{
-			glBindVertexArray(mesh.VAO);
-
-			glDrawElementsInstanced(GL_TRIANGLES, mesh.indices.size(), GL_UNSIGNED_INT, nullptr, amount);
-
-			glBindVertexArray(0);
-		}
+		glBindVertexArray(0);
 
 		/* glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.) */
 		// ------------------------------
@@ -282,7 +219,10 @@ int main()
 
 	/* optional: de-allocate all resources once they've outlived their purpose: */
 	// ------------------------------
-	delete[] modelMatrices;
+
+	glDeleteVertexArrays(1, &cubeVAO);
+
+	glDeleteBuffers(1, &cubeVBO);
 
 	/* glfw: terminate, clearing all previously allocated GLFW resources. */
 	// ------------------------------

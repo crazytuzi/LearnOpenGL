@@ -253,6 +253,12 @@
     <None Include="Shaders\10.3.planet.vs">
       <Filter>Resource Files\Shaders</Filter>
     </None>
+    <None Include="Shaders\advanced.fs">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="Shaders\advanced.vs">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Images\wall.jpg">

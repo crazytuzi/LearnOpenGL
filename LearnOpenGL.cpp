@@ -72,11 +72,11 @@ int main()
 
 	glfwMakeContextCurrent(window);
 
-	glfwSetFramebufferSizeCallback(window, frame_buffer_size_callback);
-
-	glfwSetCursorPosCallback(window, mouse_callback);
-
-	glfwSetScrollCallback(window, scroll_callback);
+	// glfwSetFramebufferSizeCallback(window, frame_buffer_size_callback);
+	//
+	// glfwSetCursorPosCallback(window, mouse_callback);
+	//
+	// glfwSetScrollCallback(window, scroll_callback);
 
 	/* tell GLFW to capture our mouse */
 	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
@@ -95,14 +95,87 @@ int main()
 
 	/* build and compile our shader program */
 	// ------------------------------
-	const Shader shader("Shaders/9.3.default.vs", "Shaders/9.3.default.fs");
+	const Shader shader("Shaders/10.1.instancing.vs", "Shaders/10.1.instancing.fs");
 
-	const Shader normalShader("Shaders/9.3.normal_visualization.vs", "Shaders/9.3.normal_visualization.fs",
-	                          "Shaders/9.3.normal_visualization.gs");
-
-	/* load models */
+	/* generate a list of 100 quad locations/translation-vectors */
 	// ------------------------------
-	const Model nanosuit("Objects/nanosuit/nanosuit.obj");
+	glm::vec2 translations[100];
+
+	auto index = 0;
+
+	const auto offset = 0.1f;
+
+	for (auto y = -10; y < 10; y += 2)
+	{
+		for (auto x = -10; x < 10; x += 2)
+		{
+			glm::vec2 translation;
+
+			translation.x = static_cast<float>(x) / 10.f + offset;
+
+			translation.y = static_cast<float>(y) / 10.f + offset;
+
+			translations[index++] = translation;
+		}
+	}
+
+	/* store instance data in an array buffer */
+	// ------------------------------
+	unsigned int instanceVBO;
+
+	glGenBuffers(1, &instanceVBO);
+
+	glBindBuffer(GL_ARRAY_BUFFER, instanceVBO);
+
+	glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec2) * 100, &translations[0], GL_STATIC_DRAW);
+
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+	/* set up vertex data (and buffer(s)) and configure vertex attributes */
+	// ------------------------------
+	float quadVertices[] = {
+		/* positions */ /* colors */
+		-0.05f, 0.05f, 1.0f, 0.0f, 0.0f,
+		0.05f, -0.05f, 0.0f, 1.0f, 0.0f,
+		-0.05f, -0.05f, 0.0f, 0.0f, 1.0f,
+
+		-0.05f, 0.05f, 1.0f, 0.0f, 0.0f,
+		0.05f, -0.05f, 0.0f, 1.0f, 0.0f,
+		0.05f, 0.05f, 0.0f, 1.0f, 1.0f
+	};
+
+	unsigned int quadVAO, quadVBO;
+
+	glGenVertexArrays(1, &quadVAO);
+
+	glGenBuffers(1, &quadVBO);
+
+	glBindVertexArray(quadVAO);
+
+	glBindBuffer(GL_ARRAY_BUFFER, quadVBO);
+
+	glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertices), quadVertices, GL_STATIC_DRAW);
+
+	glEnableVertexAttribArray(0);
+
+	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), static_cast<void*>(nullptr));
+
+	glEnableVertexAttribArray(1);
+
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), reinterpret_cast<void*>(2 * sizeof(float)));
+
+	/* also set instance data */
+	glEnableVertexAttribArray(2);
+
+	/* this attribute comes from a different vertex buffer */
+	glBindBuffer(GL_ARRAY_BUFFER, instanceVBO);
+
+	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), static_cast<void*>(nullptr));
+
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+	/* tell OpenGL this is an instanced vertex attribute. */
+	glVertexAttribDivisor(2, 1);
 
 	/* render loop */
 	// ------------------------------
@@ -125,38 +198,15 @@ int main()
 
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		/* configure transformation matrices */
-		auto projection = glm::perspective(glm::radians(45.f), static_cast<float>(scr_with) / scr_height, 1.f, 100.f);
-
-		auto view = camera.GetViewMatrix();
-
-		auto model = glm::mat4(1.f);
-
-		model = translate(model, glm::vec3(0.f, -1.75f, 0.f));
-
-		model = scale(model, glm::vec3(0.2f, 0.2f, 0.2f));
-
+		/* draw 100 instanced quads */
 		shader.use();
 
-		shader.setMat4("projection", projection);
+		glBindVertexArray(quadVAO);
 
-		shader.setMat4("view", view);
+		/* 100 triangles of 6 vertices each */
+		glDrawArraysInstanced(GL_TRIANGLES, 0, 6, 100);
 
-		shader.setMat4("model", model);
-
-		/* draw model */
-		nanosuit.Draw(shader);
-
-		/* then draw model with normal visualizing geometry shader */
-		normalShader.use();
-
-		normalShader.setMat4("projection", projection);
-
-		normalShader.setMat4("view", view);
-
-		normalShader.setMat4("model", model);
-
-		nanosuit.Draw(normalShader);
+		glBindVertexArray(0);
 
 		/* glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.) */
 		// ------------------------------
@@ -164,6 +214,14 @@ int main()
 
 		glfwPollEvents();
 	}
+
+	/* optional: de-allocate all resources once they've outlived their purpose: */
+	// ------------------------------
+	glDeleteVertexArrays(1, &quadVAO);
+
+	glDeleteBuffers(1, &quadVBO);
+
+	glDeleteBuffers(1, &instanceVBO);
 
 	/* glfw: terminate, clearing all previously allocated GLFW resources. */
 	// ------------------------------

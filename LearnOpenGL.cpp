@@ -26,14 +26,14 @@ unsigned int loadTexture(const char* path);
 unsigned int loadCubemap(const std::vector<std::string>& faces);
 
 /* settings */
-const auto scr_with = 1280;
+const auto scr_width = 1280;
 
 const auto scr_height = 720;
 
 /* camera */
 Camera camera(glm::vec3(0.f, 0.f, 3.f));
 
-auto lastX = scr_with / 2.f;
+auto lastX = scr_width / 2.f;
 
 auto lastY = scr_height / 2.f;
 
@@ -57,11 +57,9 @@ int main()
 
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-	glfwWindowHint(GLFW_SAMPLES, 4);
-
 	/* glfw: window creation */
 	// ------------------------------
-	const auto window = glfwCreateWindow(scr_with, scr_height, "LearnOpenGL", nullptr, nullptr);
+	const auto window = glfwCreateWindow(scr_width, scr_height, "LearnOpenGL", nullptr, nullptr);
 
 	if (window == nullptr)
 	{
@@ -95,12 +93,11 @@ int main()
 	// ------------------------------
 	glEnable(GL_DEPTH_TEST);
 
-	/* Enabled by default on some drivers, but not all so always enable to make sure */
-	glEnable(GL_MULTISAMPLE);
-
 	/* build and compile our shader program */
 	// ------------------------------
-	const Shader shader("Shaders/advanced.vs", "Shaders/advanced.fs");
+	const Shader shader("Shaders/11.anti_aliasing.vs", "Shaders/11.anti_aliasing.fs");
+
+	const Shader screenShader("Shaders/11.aa_post.vs", "Shaders/11.aa_post.fs");
 
 	/*  Set the object data (buffers, vertex attributes) */
 	// ------------------------------
@@ -149,8 +146,20 @@ int main()
 		-0.5f, 0.5f, -0.5f
 	};
 
+	/* vertex attributes for a quad that fills the entire screen in Normalized Device Coordinates. */
+	float quadVertices[] = {
+		/* positions */ /* texCoords */
+		-1.0f, 1.0f, 0.0f, 1.0f,
+		-1.0f, -1.0f, 0.0f, 0.0f,
+		1.0f, -1.0f, 1.0f, 0.0f,
+
+		-1.0f, 1.0f, 0.0f, 1.0f,
+		1.0f, -1.0f, 1.0f, 0.0f,
+		1.0f, 1.0f, 1.0f, 1.0f
+	};
+
 	/* Setup cube VAO */
-	GLuint cubeVAO, cubeVBO;
+	unsigned int cubeVAO, cubeVBO;
 
 	glGenVertexArrays(1, &cubeVAO);
 
@@ -167,6 +176,107 @@ int main()
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), static_cast<void*>(nullptr));
 
 	glBindVertexArray(0);
+
+	/* setup screen VAO */
+	unsigned int quadVAO, quadVBO;
+
+	glGenVertexArrays(1, &quadVAO);
+
+	glGenBuffers(1, &quadVBO);
+
+	glBindVertexArray(quadVAO);
+
+	glBindBuffer(GL_ARRAY_BUFFER, quadVBO);
+
+	glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertices), &quadVertices, GL_STATIC_DRAW);
+
+	glEnableVertexAttribArray(0);
+
+	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), static_cast<void*>(nullptr));
+
+	glEnableVertexAttribArray(1);
+
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), reinterpret_cast<void*>(2 * sizeof(float)));
+
+	glBindVertexArray(0);
+
+	/* configure MSAA framebuffer */
+	// ------------------------------
+	unsigned int framebuffer;
+
+	glGenFramebuffers(1, &framebuffer);
+
+	glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
+
+	/* create a multisampled color attachment texture */
+	unsigned int textureColorBufferMultiSampled;
+
+	glGenTextures(1, &textureColorBufferMultiSampled);
+
+	glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, textureColorBufferMultiSampled);
+
+	glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, 4, GL_RGB, scr_width, scr_height, GL_TRUE);
+
+	glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, 0);
+
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D_MULTISAMPLE,
+	                       textureColorBufferMultiSampled, 0);
+
+	/* create a (also multisampled) renderbuffer object for depth and stencil attachments */
+	unsigned int rbo;
+
+	glGenRenderbuffers(1, &rbo);
+
+	glBindRenderbuffer(GL_RENDERBUFFER, rbo);
+
+	glRenderbufferStorageMultisample(GL_RENDERBUFFER, 4, GL_DEPTH24_STENCIL8, scr_width, scr_height);
+
+	glBindRenderbuffer(GL_RENDERBUFFER, 0);
+
+	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rbo);
+
+	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+	{
+		std::cout << "ERROR::FRAMEBUFFER:: Framebuffer is not complete!" << std::endl;
+	}
+
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+	/* configure second post-processing framebuffer */
+	unsigned int intermediateFBO;
+
+	glGenFramebuffers(1, &intermediateFBO);
+
+	glBindFramebuffer(GL_FRAMEBUFFER, intermediateFBO);
+
+	/* create a color attachment texture */
+	unsigned int screenTexture;
+
+	glGenTextures(1, &screenTexture);
+
+	glBindTexture(GL_TEXTURE_2D, screenTexture);
+
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, scr_width, scr_height, 0, GL_RGB, GL_UNSIGNED_BYTE, nullptr);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+	/* we only need a color buffer */
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, screenTexture, 0);
+
+	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+	{
+		std::cout << "ERROR::FRAMEBUFFER:: Intermediate framebuffer is not complete!" << std::endl;
+	}
+
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+	/* shader configuration */
+	// ------------------------------
+	shader.use();
+
+	screenShader.setInt("screenTexture", 0);
 
 	/* render loop */
 	// ------------------------------
@@ -189,10 +299,19 @@ int main()
 
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+		/* 1. draw scene as normal in multisampled buffers */
+		glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
+
+		glClearColor(0.1f, 0.1f, 0.1f, 1.f);
+
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+		glEnable(GL_DEPTH_TEST);
+
 		/* Set transformation matrices */
 		shader.use();
 
-		auto projection = glm::perspective(glm::radians(45.f), static_cast<float>(scr_with) / scr_height, 0.1f, 100.f);
+		auto projection = glm::perspective(glm::radians(45.f), static_cast<float>(scr_width) / scr_height, 0.1f, 100.f);
 
 		auto view = camera.GetViewMatrix();
 
@@ -210,6 +329,35 @@ int main()
 
 		glBindVertexArray(0);
 
+		/* 2. now blit multisampled buffer(s) to normal colorbuffer of intermediate FBO. Image is stored in screenTexture */
+		glBindFramebuffer(GL_READ_FRAMEBUFFER, framebuffer);
+
+		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, intermediateFBO);
+
+		glBlitFramebuffer(0, 0, scr_width, scr_height, 0, 0, scr_width, scr_height, GL_COLOR_BUFFER_BIT, GL_NEAREST);
+
+		/* 3. now render quad with scene's visuals as its texture image */
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+		glClearColor(1.f, 1.f, 1.f, 1.f);
+
+		glClear(GL_COLOR_BUFFER_BIT);
+
+		glDisable(GL_DEPTH_TEST);
+
+		/* draw Screen quad */
+		screenShader.use();
+
+		glBindVertexArray(quadVAO);
+
+		glActiveTexture(GL_TEXTURE0);
+
+		/* use the now resolved color attachment as the quad's texture */
+		glBindTexture(GL_TEXTURE_2D, screenTexture);
+
+		/* use the now resolved color attachment as the quad's texture */
+		glDrawArrays(GL_TRIANGLES, 0, 6);
+
 		/* glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.) */
 		// ------------------------------
 		glfwSwapBuffers(window);
@@ -222,7 +370,19 @@ int main()
 
 	glDeleteVertexArrays(1, &cubeVAO);
 
+	glDeleteVertexArrays(1, &quadVAO);
+
+	glDeleteRenderbuffers(1, &rbo);
+
+	glDeleteFramebuffers(1, &intermediateFBO);
+
+	glDeleteTextures(1, &textureColorBufferMultiSampled);
+
 	glDeleteBuffers(1, &cubeVBO);
+
+	glDeleteBuffers(1, &quadVBO);
+
+	glDeleteBuffers(1, &framebuffer);
 
 	/* glfw: terminate, clearing all previously allocated GLFW resources. */
 	// ------------------------------

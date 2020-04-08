@@ -259,6 +259,18 @@
     <None Include="Shaders\advanced.vs">
       <Filter>Resource Files\Shaders</Filter>
     </None>
+    <None Include="Shaders\11.aa_post.fs">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="Shaders\11.aa_post.vs">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="Shaders\11.anti_aliasing.fs">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="Shaders\11.anti_aliasing.vs">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Images\wall.jpg">

@@ -184,6 +184,10 @@
     <None Include="Shaders\10.3.asteroids.vs" />
     <None Include="Shaders\10.3.planet.fs" />
     <None Include="Shaders\10.3.planet.vs" />
+    <None Include="Shaders\11.aa_post.fs" />
+    <None Include="Shaders\11.aa_post.vs" />
+    <None Include="Shaders\11.anti_aliasing.fs" />
+    <None Include="Shaders\11.anti_aliasing.vs" />
     <None Include="Shaders\2.stencil_single_color.fs" />
     <None Include="Shaders\2.stencil_testing.fs" />
     <None Include="Shaders\2.stencil_testing.vs" />

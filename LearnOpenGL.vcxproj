@@ -170,6 +170,8 @@
     <None Include="Objects\rock\rock.mtl" />
     <None Include="Shaders\1.1.depth_testing.fs" />
     <None Include="Shaders\1.1.depth_testing.vs" />
+    <None Include="Shaders\1.advanced_lighting.fs" />
+    <None Include="Shaders\1.advanced_lighting.vs" />
     <None Include="Shaders\1.colors.fs" />
     <None Include="Shaders\1.colors.vs" />
     <None Include="Shaders\1.lamp.fs" />
@@ -287,6 +289,7 @@
     <Image Include="Textures\skybox\left.jpg" />
     <Image Include="Textures\skybox\right.jpg" />
     <Image Include="Textures\skybox\top.jpg" />
+    <Image Include="Textures\wood.png" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="Objects\nanosuit\LICENSE.txt" />

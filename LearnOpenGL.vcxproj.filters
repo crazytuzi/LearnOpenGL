@@ -271,6 +271,12 @@
     <None Include="Shaders\11.anti_aliasing.vs">
       <Filter>Resource Files\Shaders</Filter>
     </None>
+    <None Include="Shaders\1.advanced_lighting.fs">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="Shaders\1.advanced_lighting.vs">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Images\wall.jpg">
@@ -446,6 +452,9 @@
     </Image>
     <Image Include="Objects\planet\planet_Quom1200.png">
       <Filter>Resource Files\Objects\planet</Filter>
+    </Image>
+    <Image Include="Textures\wood.png">
+      <Filter>Resource Files\Textures</Filter>
     </Image>
   </ItemGroup>
   <ItemGroup>

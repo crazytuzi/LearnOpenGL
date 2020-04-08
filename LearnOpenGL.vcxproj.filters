@@ -31,6 +31,12 @@
     <Filter Include="Resource Files\Objects\nanosuit_reflection">
       <UniqueIdentifier>{dbed88dd-9662-4209-acdb-886836cdf8d4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Resource Files\Objects\rock">
+      <UniqueIdentifier>{5f4f2164-1ba6-492d-b71f-23fbec0abbcc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\Objects\planet">
+      <UniqueIdentifier>{9734d684-5b01-41d6-8450-527da4dbf5e5}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="LearnOpenGL.cpp">
@@ -223,6 +229,18 @@
     <None Include="Shaders\10.1.instancing.vs">
       <Filter>Resource Files\Shaders</Filter>
     </None>
+    <None Include="Shaders\10.2.instancing.fs">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="Shaders\10.2.instancing.vs">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="Objects\rock\rock.mtl">
+      <Filter>Resource Files\Objects\rock</Filter>
+    </None>
+    <None Include="Objects\planet\planet.mtl">
+      <Filter>Resource Files\Objects\planet</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Images\wall.jpg">
@@ -392,6 +410,12 @@
     </Image>
     <Image Include="Objects\nanosuit_reflection\leg_showroom_spec.png">
       <Filter>Resource Files\Objects\nanosuit_reflection</Filter>
+    </Image>
+    <Image Include="Objects\rock\Rock-Texture-Surface.jpg">
+      <Filter>Resource Files\Objects\rock</Filter>
+    </Image>
+    <Image Include="Objects\planet\planet_Quom1200.png">
+      <Filter>Resource Files\Objects\planet</Filter>
     </Image>
   </ItemGroup>
   <ItemGroup>

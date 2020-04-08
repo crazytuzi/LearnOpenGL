@@ -31,7 +31,7 @@ const auto scr_with = 1280;
 const auto scr_height = 720;
 
 /* camera */
-Camera camera(glm::vec3(0.f, 0.f, 3.f));
+Camera camera(glm::vec3(0.f, 0.f, 55.f));
 
 auto lastX = scr_with / 2.f;
 
@@ -72,11 +72,11 @@ int main()
 
 	glfwMakeContextCurrent(window);
 
-	// glfwSetFramebufferSizeCallback(window, frame_buffer_size_callback);
-	//
-	// glfwSetCursorPosCallback(window, mouse_callback);
-	//
-	// glfwSetScrollCallback(window, scroll_callback);
+	glfwSetFramebufferSizeCallback(window, frame_buffer_size_callback);
+
+	glfwSetCursorPosCallback(window, mouse_callback);
+
+	glfwSetScrollCallback(window, scroll_callback);
 
 	/* tell GLFW to capture our mouse */
 	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
@@ -95,87 +95,62 @@ int main()
 
 	/* build and compile our shader program */
 	// ------------------------------
-	const Shader shader("Shaders/10.1.instancing.vs", "Shaders/10.1.instancing.fs");
+	const Shader shader("Shaders/10.2.instancing.vs", "Shaders/10.2.instancing.fs");
 
-	/* generate a list of 100 quad locations/translation-vectors */
+	/* load models */
 	// ------------------------------
-	glm::vec2 translations[100];
+	const Model rock("Objects/rock/rock.obj");
 
-	auto index = 0;
+	const Model planet("Objects/planet/planet.obj");
 
-	const auto offset = 0.1f;
+	/* generate a large list of semi-random model transformation matrices */
+	// ------------------------------
+	const auto amount = 1000u;
 
-	for (auto y = -10; y < 10; y += 2)
+	const auto modelMatrices = new glm::mat4[amount];
+
+	/* initialize random seed */
+	srand(glfwGetTime());
+
+	const auto radius = 50.f;
+
+	const auto offset = 2.5f;
+
+	for (auto i = 0u; i < amount; ++i)
 	{
-		for (auto x = -10; x < 10; x += 2)
-		{
-			glm::vec2 translation;
+		auto model = glm::mat4(1.f);
 
-			translation.x = static_cast<float>(x) / 10.f + offset;
+		/* 1. translation: displace along circle with 'radius' in range [-offset, offset] */
+		const auto angle = static_cast<float>(i) / amount * 360.f;
 
-			translation.y = static_cast<float>(y) / 10.f + offset;
+		auto displacement = rand() % static_cast<int>(2 * offset * 100) / 100.f - offset;
 
-			translations[index++] = translation;
-		}
+		const auto x = sin(angle) * radius + displacement;
+
+		displacement = rand() % static_cast<int>(2 * offset * 100) / 100.f - offset;
+
+		/* keep height of asteroid field smaller compared to width of x and z */
+		const auto y = displacement * 0.4f;
+
+		displacement = rand() % static_cast<int>(2 * offset * 100) / 100.f - offset;
+
+		const auto z = cos(angle) * radius + displacement;
+
+		model = translate(model, glm::vec3(x, y, z));
+
+		/* 2. scale: Scale between 0.05 and 0.25f */
+		const auto scale = rand() % 20 / 100.f + 0.05f;
+
+		model = glm::scale(model, glm::vec3(scale));
+
+		/* 3. rotation: add random rotation around a (semi)randomly picked rotation axis vector */
+		const auto rotAngle = static_cast<float>(rand() % 360);
+
+		model = rotate(model, rotAngle, glm::vec3(0.4f, 0.6f, 0.8f));
+
+		/* 4. now add to list of matrices */
+		modelMatrices[i] = model;
 	}
-
-	/* store instance data in an array buffer */
-	// ------------------------------
-	unsigned int instanceVBO;
-
-	glGenBuffers(1, &instanceVBO);
-
-	glBindBuffer(GL_ARRAY_BUFFER, instanceVBO);
-
-	glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec2) * 100, &translations[0], GL_STATIC_DRAW);
-
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-	/* set up vertex data (and buffer(s)) and configure vertex attributes */
-	// ------------------------------
-	float quadVertices[] = {
-		/* positions */ /* colors */
-		-0.05f, 0.05f, 1.0f, 0.0f, 0.0f,
-		0.05f, -0.05f, 0.0f, 1.0f, 0.0f,
-		-0.05f, -0.05f, 0.0f, 0.0f, 1.0f,
-
-		-0.05f, 0.05f, 1.0f, 0.0f, 0.0f,
-		0.05f, -0.05f, 0.0f, 1.0f, 0.0f,
-		0.05f, 0.05f, 0.0f, 1.0f, 1.0f
-	};
-
-	unsigned int quadVAO, quadVBO;
-
-	glGenVertexArrays(1, &quadVAO);
-
-	glGenBuffers(1, &quadVBO);
-
-	glBindVertexArray(quadVAO);
-
-	glBindBuffer(GL_ARRAY_BUFFER, quadVBO);
-
-	glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertices), quadVertices, GL_STATIC_DRAW);
-
-	glEnableVertexAttribArray(0);
-
-	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), static_cast<void*>(nullptr));
-
-	glEnableVertexAttribArray(1);
-
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), reinterpret_cast<void*>(2 * sizeof(float)));
-
-	/* also set instance data */
-	glEnableVertexAttribArray(2);
-
-	/* this attribute comes from a different vertex buffer */
-	glBindBuffer(GL_ARRAY_BUFFER, instanceVBO);
-
-	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), static_cast<void*>(nullptr));
-
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-	/* tell OpenGL this is an instanced vertex attribute. */
-	glVertexAttribDivisor(2, 1);
 
 	/* render loop */
 	// ------------------------------
@@ -198,15 +173,35 @@ int main()
 
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		/* draw 100 instanced quads */
+		/* configure transformation matrices */
+		auto projection = glm::perspective(glm::radians(45.f), static_cast<float>(scr_with) / scr_height, 0.1f, 100.f);
+
+		auto view = camera.GetViewMatrix();
+
 		shader.use();
 
-		glBindVertexArray(quadVAO);
+		shader.setMat4("projection", projection);
 
-		/* 100 triangles of 6 vertices each */
-		glDrawArraysInstanced(GL_TRIANGLES, 0, 6, 100);
+		shader.setMat4("view", view);
 
-		glBindVertexArray(0);
+		/* draw planet */
+		auto model = glm::mat4(1.f);
+
+		model = translate(model, glm::vec3(0.f, -3.f, 0.f));
+
+		model = scale(model, glm::vec3(4.f, 4.f, 4.f));
+
+		shader.setMat4("model", model);
+
+		planet.Draw(shader);
+
+		/* draw meteorites */
+		for (auto i = 0u; i < amount; ++i)
+		{
+			shader.setMat4("model", modelMatrices[i]);
+
+			rock.Draw(shader);
+		}
 
 		/* glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.) */
 		// ------------------------------
@@ -217,11 +212,7 @@ int main()
 
 	/* optional: de-allocate all resources once they've outlived their purpose: */
 	// ------------------------------
-	glDeleteVertexArrays(1, &quadVAO);
-
-	glDeleteBuffers(1, &quadVBO);
-
-	glDeleteBuffers(1, &instanceVBO);
+	delete[] modelMatrices;
 
 	/* glfw: terminate, clearing all previously allocated GLFW resources. */
 	// ------------------------------

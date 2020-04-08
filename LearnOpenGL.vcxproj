@@ -166,6 +166,8 @@
     <None Include="Objects\nanosuit\nanosuit.mtl" />
     <None Include="Objects\nanosuit_reflection\nanosuit.blend" />
     <None Include="Objects\nanosuit_reflection\nanosuit.mtl" />
+    <None Include="Objects\planet\planet.mtl" />
+    <None Include="Objects\rock\rock.mtl" />
     <None Include="Shaders\1.1.depth_testing.fs" />
     <None Include="Shaders\1.1.depth_testing.vs" />
     <None Include="Shaders\1.colors.fs" />
@@ -176,6 +178,8 @@
     <None Include="Shaders\1.model_loading.vs" />
     <None Include="Shaders\10.1.instancing.fs" />
     <None Include="Shaders\10.1.instancing.vs" />
+    <None Include="Shaders\10.2.instancing.fs" />
+    <None Include="Shaders\10.2.instancing.vs" />
     <None Include="Shaders\2.stencil_single_color.fs" />
     <None Include="Shaders\2.stencil_testing.fs" />
     <None Include="Shaders\2.stencil_testing.vs" />
@@ -257,6 +261,8 @@
     <Image Include="Objects\nanosuit_reflection\leg_showroom_ddn.png" />
     <Image Include="Objects\nanosuit_reflection\leg_showroom_refl.png" />
     <Image Include="Objects\nanosuit_reflection\leg_showroom_spec.png" />
+    <Image Include="Objects\planet\planet_Quom1200.png" />
+    <Image Include="Objects\rock\Rock-Texture-Surface.jpg" />
     <Image Include="Textures\awesomeface.png" />
     <Image Include="Textures\blending_transparent_window.png" />
     <Image Include="Textures\container2.png" />

@@ -190,6 +190,8 @@
     <None Include="Shaders\11.aa_post.vs" />
     <None Include="Shaders\11.anti_aliasing.fs" />
     <None Include="Shaders\11.anti_aliasing.vs" />
+    <None Include="Shaders\2.gamma_correction.fs" />
+    <None Include="Shaders\2.gamma_correction.vs" />
     <None Include="Shaders\2.stencil_single_color.fs" />
     <None Include="Shaders\2.stencil_testing.fs" />
     <None Include="Shaders\2.stencil_testing.vs" />

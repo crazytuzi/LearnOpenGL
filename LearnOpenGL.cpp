@@ -21,7 +21,7 @@ void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 
 void process_input(GLFWwindow* window);
 
-unsigned int loadTexture(const char* path);
+unsigned int loadTexture(const char* path, bool gammaCorrection);
 
 unsigned int loadCubemap(const std::vector<std::string>& faces);
 
@@ -30,9 +30,9 @@ const auto scr_width = 1280;
 
 const auto scr_height = 720;
 
-auto blinn = false;
+auto gammaEnabled = false;
 
-auto blinnKeyPressed = false;
+auto gammaKeyPressed = false;
 
 /* camera */
 Camera camera(glm::vec3(0.f, 0.f, 3.f));
@@ -103,7 +103,7 @@ int main()
 
 	/* build and compile our shader program */
 	// ------------------------------
-	const Shader shader("Shaders/1.advanced_lighting.vs", "Shaders/1.advanced_lighting.fs");
+	const Shader shader("Shaders/2.gamma_correction.vs", "Shaders/2.gamma_correction.fs");
 
 	/*  Set the object data (buffers, vertex attributes) */
 	// ------------------------------
@@ -148,17 +148,31 @@ int main()
 	/* load textures */
 	// ------------------------------
 
-	const auto floorTexture = loadTexture("Textures/wood.png");
+	const auto floorTexture = loadTexture("Textures/wood.png", false);
+
+	const auto floorTextureGammaCorrected = loadTexture("Textures/wood.png", true);
 
 	/* shader configuration */
 	// ------------------------------
 	shader.use();
 
-	shader.setInt("texture0", 0);
+	shader.setInt("floorTexture", 0);
 
 	/* lighting info */
 	// ------------------------------
-	const glm::vec3 lightPos(0.f, 0.f, 0.f);
+	const glm::vec3 lightPositions[] = {
+		glm::vec3(-3.0f, 0.0f, 0.0f),
+		glm::vec3(-1.0f, 0.0f, 0.0f),
+		glm::vec3(1.0f, 0.0f, 0.0f),
+		glm::vec3(3.0f, 0.0f, 0.0f)
+	};
+
+	const glm::vec3 lightColors[] = {
+		glm::vec3(0.25),
+		glm::vec3(0.50),
+		glm::vec3(0.75),
+		glm::vec3(1.00)
+	};
 
 	/* render loop */
 	// ------------------------------
@@ -195,16 +209,18 @@ int main()
 		/* set light uniforms */
 		shader.setVec3("viewPos", camera.Position);
 
-		shader.setVec3("lightPos", lightPos);
+		glUniform3fv(glGetUniformLocation(shader.ID, "lightPositions"), 4, &lightPositions[0][0]);
 
-		shader.setInt("blinn", blinn);
+		glUniform3fv(glGetUniformLocation(shader.ID, "lightColors"), 4, &lightColors[0][0]);
+
+		shader.setBool("gamma", gammaEnabled);
 
 		/* floor */
 		glBindVertexArray(planeVAO);
 
 		glActiveTexture(GL_TEXTURE0);
 
-		glBindTexture(GL_TEXTURE_2D, floorTexture);
+		glBindTexture(GL_TEXTURE_2D, gammaEnabled ? floorTextureGammaCorrected : floorTexture);
 
 		glDrawArrays(GL_TRIANGLES, 0, 6);
 
@@ -258,16 +274,16 @@ void process_input(GLFWwindow* window)
 		camera.ProcessKeyboard(Camera_Movement::RIGHT, deltaTime);
 	}
 
-	if (glfwGetKey(window,GLFW_KEY_B) == GLFW_PRESS && !blinnKeyPressed)
+	if (glfwGetKey(window,GLFW_KEY_B) == GLFW_PRESS && !gammaKeyPressed)
 	{
-		blinn = !blinn;
+		gammaEnabled = !gammaEnabled;
 
-		blinnKeyPressed = true;
+		gammaKeyPressed = true;
 	}
 
 	if (glfwGetKey(window,GLFW_KEY_B) == GLFW_RELEASE)
 	{
-		blinnKeyPressed = false;
+		gammaKeyPressed = false;
 	}
 }
 
@@ -316,7 +332,7 @@ void scroll_callback(GLFWwindow* window, const double xoffset, const double yoff
 
 /* utility function for loading a 2D texture from file */
 // ------------------------------
-unsigned int loadTexture(char const* path)
+unsigned int loadTexture(char const* path, bool gammaCorrection)
 {
 	unsigned int textureID;
 
@@ -328,24 +344,30 @@ unsigned int loadTexture(char const* path)
 
 	if (data)
 	{
-		GLenum format;
+		GLenum internalFormat;
+
+		GLenum dataFormat;
 
 		if (nrComponents == 1)
 		{
-			format = GL_RED;
+			internalFormat = dataFormat = GL_RED;
 		}
 		else if (nrComponents == 3)
 		{
-			format = GL_RGB;
+			internalFormat = gammaCorrection ? GL_SRGB : GL_RGB;
+
+			dataFormat = GL_RGB;
 		}
 		else if (nrComponents == 4)
 		{
-			format = GL_RGBA;
+			internalFormat = gammaCorrection ? GL_SRGB_ALPHA : GL_RGBA;
+
+			dataFormat = GL_RGBA;
 		}
 
 		glBindTexture(GL_TEXTURE_2D, textureID);
 
-		glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
+		glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, width, height, 0, dataFormat, GL_UNSIGNED_BYTE, data);
 
 		glGenerateMipmap(GL_TEXTURE_2D);
 

@@ -295,6 +295,24 @@
     <None Include="Shaders\3.1.1.shadow_mapping_depth.vs">
       <Filter>Resource Files\Shaders</Filter>
     </None>
+    <None Include="Shaders\3.1.2.debug_quad.vs">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="Shaders\3.1.2.debug_quad_depth.fs">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="Shaders\3.1.2.shadow_mapping.fs">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="Shaders\3.1.2.shadow_mapping.vs">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="Shaders\3.1.2.shadow_mapping_depth.fs">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="Shaders\3.1.2.shadow_mapping_depth.vs">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Images\wall.jpg">

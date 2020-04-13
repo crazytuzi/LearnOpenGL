@@ -195,6 +195,10 @@
     <None Include="Shaders\2.stencil_single_color.fs" />
     <None Include="Shaders\2.stencil_testing.fs" />
     <None Include="Shaders\2.stencil_testing.vs" />
+    <None Include="Shaders\3.1.1.debug_quad.vs" />
+    <None Include="Shaders\3.1.1.debug_quad_depth.fs" />
+    <None Include="Shaders\3.1.1.shadow_mapping_depth.fs" />
+    <None Include="Shaders\3.1.1.shadow_mapping_depth.vs" />
     <None Include="Shaders\3.1.blending.fs" />
     <None Include="Shaders\3.1.blending.vs" />
     <None Include="Shaders\3.3.shader.fs" />

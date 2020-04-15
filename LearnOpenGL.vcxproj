@@ -207,6 +207,11 @@
     <None Include="Shaders\3.1.2.shadow_mapping_depth.vs" />
     <None Include="Shaders\3.1.blending.fs" />
     <None Include="Shaders\3.1.blending.vs" />
+    <None Include="Shaders\3.2.1.point_shadows.fs" />
+    <None Include="Shaders\3.2.1.point_shadows.vs" />
+    <None Include="Shaders\3.2.1.point_shadows_depth.fs" />
+    <None Include="Shaders\3.2.1.point_shadows_depth.gs" />
+    <None Include="Shaders\3.2.1.point_shadows_depth.vs" />
     <None Include="Shaders\3.3.shader.fs" />
     <None Include="Shaders\3.3.shader.vs" />
     <None Include="Shaders\5.1.framebuffers.fs" />

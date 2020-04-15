@@ -313,6 +313,21 @@
     <None Include="Shaders\3.1.2.shadow_mapping_depth.vs">
       <Filter>Resource Files\Shaders</Filter>
     </None>
+    <None Include="Shaders\3.2.1.point_shadows.fs">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="Shaders\3.2.1.point_shadows.vs">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="Shaders\3.2.1.point_shadows_depth.fs">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="Shaders\3.2.1.point_shadows_depth.gs">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="Shaders\3.2.1.point_shadows_depth.vs">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Images\wall.jpg">

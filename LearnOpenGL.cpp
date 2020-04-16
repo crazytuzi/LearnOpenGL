@@ -101,7 +101,7 @@ int main()
 
 	/* build and compile our shader program */
 	// ------------------------------
-	const Shader shader("Shaders/3.2.1.point_shadows.vs", "Shaders/3.2.1.point_shadows.fs");
+	const Shader shader("Shaders/3.2.1.point_shadows.vs", "Shaders/3.2.2.point_shadows.fs");
 
 	const Shader simpleDepthShader("Shaders/3.2.1.point_shadows_depth.vs", "Shaders/3.2.1.point_shadows_depth.fs",
 	                               "Shaders/3.2.1.point_shadows_depth.gs");

@@ -25,9 +25,7 @@ unsigned int loadTexture(const char* path, bool gammaCorrection = false);
 
 unsigned int loadCubemap(const std::vector<std::string>& faces);
 
-void renderScene(const Shader& shader);
-
-void renderCube();
+void renderQuad();
 
 /* settings */
 const auto scr_width = 1280;
@@ -101,70 +99,25 @@ int main()
 
 	/* build and compile our shader program */
 	// ------------------------------
-	const Shader shader("Shaders/3.2.1.point_shadows.vs", "Shaders/3.2.2.point_shadows.fs");
-
-	const Shader simpleDepthShader("Shaders/3.2.1.point_shadows_depth.vs", "Shaders/3.2.1.point_shadows_depth.fs",
-	                               "Shaders/3.2.1.point_shadows_depth.gs");
+	const Shader shader("Shaders/4.normal_mapping.vs", "Shaders/4.normal_mapping.fs");
 
 	/* load textures */
 	// ------------------------------
-	const auto woodTexture = loadTexture("Textures/wood.png");
+	const auto diffuseMap = loadTexture("Textures/brickwall.jpg");
 
-	/* configure depth map FBO */
-	// ------------------------------
-	const auto shadow_width = 1024u, shadow_height = 1024u;
-
-	unsigned int depthMapFBO;
-
-	glGenFramebuffers(1, &depthMapFBO);
-
-	/* create depth texture */
-	// ------------------------------
-	unsigned int depthCubeMap;
-
-	glGenTextures(1, &depthCubeMap);
-
-	glBindTexture(GL_TEXTURE_CUBE_MAP, depthCubeMap);
-
-	for (auto i = 0u; i < 6; ++i)
-	{
-		glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_DEPTH_COMPONENT, shadow_width, shadow_height, 0,
-		             GL_DEPTH_COMPONENT, GL_FLOAT, nullptr);
-	}
-
-	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-
-	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-
-	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-
-	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-
-	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
-
-	/* attach depth texture as FBO's depth buffer */
-	// ------------------------------
-	glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
-
-	glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, depthCubeMap, 0);
-
-	glDrawBuffer(GL_NONE);
-
-	glReadBuffer(GL_NONE);
-
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	const auto normalMap = loadTexture("Textures/brickwall_normal.jpg");
 
 	/* shader configuration */
 	// ------------------------------
 	shader.use();
 
-	shader.setInt("diffuseTexture", 0);
+	shader.setInt("diffuseMap", 0);
 
-	shader.setInt("depthMap", 1);
+	shader.setInt("normalMap", 1);
 
 	/* lighting info */
 	// ------------------------------
-	glm::vec3 lightPos(0.f, 0.f, 0.f);
+	glm::vec3 lightPos(0.5f, 1.f, 0.3f);
 
 	/* render loop */
 	// ------------------------------
@@ -182,100 +135,55 @@ int main()
 		// ------------------------------
 		process_input(window);
 
-		/* move light position over time */
-		// ------------------------------
-		lightPos.z = sin(glfwGetTime() * 0.5f) * 3.f;
-
 		/* render */
 		glClearColor(0.1f, 0.1f, 0.1f, 1.f);
 
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		/* 0. create depth cubemap transformation matrices */
-		// ------------------------------
-		const auto near_plane = 1.f;
+		/* configure view/projection matrices */
+		auto projection = glm::perspective(glm::radians(camera.Zoom), static_cast<float>(scr_width) / scr_height, 0.1f,
+		                                   100.f);
 
-		const auto far_plane = 25.f;
-
-		const auto shadowProj = glm::perspective(glm::radians(90.f), static_cast<float>(shadow_width) / shadow_height,
-		                                         near_plane, far_plane);
-
-		std::vector<glm::mat4> shadowTransforms;
-
-		shadowTransforms.push_back(shadowProj * lookAt(lightPos, lightPos + glm::vec3(1.f, 0.f, 0.f),
-		                                               glm::vec3(0.f, -1.f, 0.f)));
-
-		shadowTransforms.push_back(shadowProj * lookAt(lightPos, lightPos + glm::vec3(-1.f, 0.f, 0.f),
-		                                               glm::vec3(0.f, -1.f, 0.f)));
-
-		shadowTransforms.push_back(shadowProj * lookAt(lightPos, lightPos + glm::vec3(0.f, 1.f, 0.f),
-		                                               glm::vec3(0.f, 0.f, 1.f)));
-
-		shadowTransforms.push_back(shadowProj * lookAt(lightPos, lightPos + glm::vec3(0.f, -1.f, 0.f),
-		                                               glm::vec3(0.f, 0.f, -1.f)));
-
-		shadowTransforms.push_back(shadowProj * lookAt(lightPos, lightPos + glm::vec3(0.f, 0.f, 1.f),
-		                                               glm::vec3(0.f, -1.f, 0.f)));
-
-		shadowTransforms.push_back(shadowProj * lookAt(lightPos, lightPos + glm::vec3(0.f, 0.f, -1.f),
-		                                               glm::vec3(0.f, -1.f, 0.f)));
-
-		/* 1. render depth of scene to texture (from light's perspective) */
-		// ------------------------------
-		glViewport(0, 0, shadow_width, shadow_height);
-
-		glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
-
-		glClear(GL_DEPTH_BUFFER_BIT);
-
-		simpleDepthShader.use();
-
-		for (auto i = 0u; i < 6; ++i)
-		{
-			simpleDepthShader.setMat4("shadowMatrices[" + std::to_string(i) + "]", shadowTransforms[i]);
-		}
-
-		simpleDepthShader.setFloat("far_plane", far_plane);
-
-		simpleDepthShader.setVec3("lightPos", lightPos);
-
-		renderScene(simpleDepthShader);
-
-		glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
-		/* 2. render scene as normal */
-		// ------------------------------
-		glViewport(0, 0, scr_width, scr_height);
-
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		auto view = camera.GetViewMatrix();
 
 		shader.use();
-
-		const auto projection = glm::perspective(glm::radians(camera.Zoom), static_cast<float>(scr_width) / scr_height,
-		                                         0.1f, 100.f);
-
-		const auto view = camera.GetViewMatrix();
 
 		shader.setMat4("projection", projection);
 
 		shader.setMat4("view", view);
 
-		/* set lighting uniforms */
-		shader.setVec3("lightPos", lightPos);
+		/* render normal-mapped quad */
+		auto model = glm::mat4(1.f);
+
+		model = rotate(model, glm::radians(static_cast<float>(glfwGetTime()) * -10.f),
+		               normalize(glm::vec3(1.f, 0.f, 1.f)));
+
+		shader.setMat4("model", model);
 
 		shader.setVec3("viewPos", camera.Position);
 
-		shader.setFloat("far_plane", far_plane);
+		shader.setVec3("lightPos", lightPos);
 
 		glActiveTexture(GL_TEXTURE0);
 
-		glBindTexture(GL_TEXTURE_2D, woodTexture);
+		glBindTexture(GL_TEXTURE_2D, diffuseMap);
 
 		glActiveTexture(GL_TEXTURE1);
 
-		glBindTexture(GL_TEXTURE_CUBE_MAP, depthCubeMap);
+		glBindTexture(GL_TEXTURE_2D, normalMap);
 
-		renderScene(shader);
+		renderQuad();
+
+		/* render light source (simply re-renders a smaller plane at the light's position for debugging/visualization) */
+		model = glm::mat4(1.f);
+
+		model = translate(model, lightPos);
+
+		model = scale(model, glm::vec3(0.1f));
+
+		shader.setMat4("model", model);
+
+		renderQuad();
 
 		/* glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.) */
 		// ------------------------------
@@ -481,173 +389,149 @@ unsigned int loadCubemap(const std::vector<std::string>& faces)
 	return textureID;
 }
 
-/* renders the 3D scene */
+/* renders a 1x1 quad in NDC with manually calculated tangent vectors */
 // ------------------------------
-void renderScene(const Shader& shader)
+auto quadVAO = 0u;
+
+auto quadVBO = 0u;
+
+void renderQuad()
 {
-	/* room cube */
-	auto model = glm::mat4(1.f);
-
-	model = scale(model, glm::vec3(5.f));
-
-	shader.setMat4("model", model);
-
-	/* note that we disable culling here since we render 'inside' the cube instead of the usual 'outside' which throws off the normal culling methods. */
-	glDisable(GL_CULL_FACE);
-
-	/* A small little hack to invert normals when drawing cube from the inside so lighting still works. */
-	shader.setInt("reverse_normals", 1);
-
-	renderCube();
-
-	/* and of course disable it */
-	shader.setInt("reverse_normals", 0);
-
-	glEnable(GL_CULL_FACE);
-
-	/* cubes */
-	model = glm::mat4(1.f);
-
-	model = translate(model, glm::vec3(4.f, -3.5f, 0.f));
-
-	model = scale(model, glm::vec3(0.5f));
-
-	shader.setMat4("model", model);
-
-	renderCube();
-
-	model = glm::mat4(1.f);
-
-	model = translate(model, glm::vec3(2.f, 3.f, 1.f));
-
-	model = scale(model, glm::vec3(0.75f));
-
-	shader.setMat4("model", model);
-
-	renderCube();
-
-	model = glm::mat4(1.f);
-
-	model = translate(model, glm::vec3(-3.f, -1.f, 0.f));
-
-	model = scale(model, glm::vec3(0.5f));
-
-	shader.setMat4("model", model);
-
-	renderCube();
-
-	model = glm::mat4(1.f);
-
-	model = translate(model, glm::vec3(-1.5f, 1.f, 1.5f));
-
-	model = scale(model, glm::vec3(0.5f));
-
-	shader.setMat4("model", model);
-
-	renderCube();
-
-	model = glm::mat4(1.f);
-
-	model = translate(model, glm::vec3(-1.5f, 2.f, -3.f));
-
-	model = rotate(model, glm::radians(60.f), normalize(glm::vec3(1.f, 0.f, 1.f)));
-
-	model = scale(model, glm::vec3(0.75f));
-
-	shader.setMat4("model", model);
-
-	renderCube();
-}
-
-/* renderCube() renders a 1x1 3D cube in NDC. */
-// ------------------------------
-auto cubeVAO = 0u;
-
-auto cubeVBO = 0u;
-
-void renderCube()
-{
-	/* initialize (if necessary) */
-	if (cubeVAO == 0)
+	if (quadVAO == 0)
 	{
-		float vertices[] = {
-			/* back face */
-			-1.0f, -1.0f, -1.0f, 0.0f, 0.0f, -1.0f, 0.0f, 0.0f, /* bottom-left */
-			1.0f, 1.0f, -1.0f, 0.0f, 0.0f, -1.0f, 1.0f, 1.0f, /* top-right */
-			1.0f, -1.0f, -1.0f, 0.0f, 0.0f, -1.0f, 1.0f, 0.0f, /* bottom-right */
-			1.0f, 1.0f, -1.0f, 0.0f, 0.0f, -1.0f, 1.0f, 1.0f, /* top-right */
-			-1.0f, -1.0f, -1.0f, 0.0f, 0.0f, -1.0f, 0.0f, 0.0f, /* bottom-left */
-			-1.0f, 1.0f, -1.0f, 0.0f, 0.0f, -1.0f, 0.0f, 1.0f, /* top-left */
-			/* front face */
-			-1.0f, -1.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, /* bottom-left */
-			1.0f, -1.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f, /* bottom-right */
-			1.0f, 1.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f, /* top-right */
-			1.0f, 1.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f, /* top-right */
-			-1.0f, 1.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, /* top-left */
-			-1.0f, -1.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, /* bottom-left */
-			/* left face */
-			-1.0f, 1.0f, 1.0f, -1.0f, 0.0f, 0.0f, 1.0f, 0.0f, /* top-right */
-			-1.0f, 1.0f, -1.0f, -1.0f, 0.0f, 0.0f, 1.0f, 1.0f, /* top-left */
-			-1.0f, -1.0f, -1.0f, -1.0f, 0.0f, 0.0f, 0.0f, 1.0f, /* bottom-left */
-			-1.0f, -1.0f, -1.0f, -1.0f, 0.0f, 0.0f, 0.0f, 1.0f, /* bottom-left */
-			-1.0f, -1.0f, 1.0f, -1.0f, 0.0f, 0.0f, 0.0f, 0.0f, /* bottom-right */
-			-1.0f, 1.0f, 1.0f, -1.0f, 0.0f, 0.0f, 1.0f, 0.0f, /* top-right */
-			/* right face */
-			1.0f, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f, /* top-left */
-			1.0f, -1.0f, -1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f, /* bottom-right */
-			1.0f, 1.0f, -1.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f, /* top-right */
-			1.0f, -1.0f, -1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f, /* bottom-right */
-			1.0f, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f, /* top-left */
-			1.0f, -1.0f, 1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, /* bottom-left */
-			/* bottom face */
-			-1.0f, -1.0f, -1.0f, 0.0f, -1.0f, 0.0f, 0.0f, 1.0f, /* top-right */
-			1.0f, -1.0f, -1.0f, 0.0f, -1.0f, 0.0f, 1.0f, 1.0f, /* top-left */
-			1.0f, -1.0f, 1.0f, 0.0f, -1.0f, 0.0f, 1.0f, 0.0f, /* bottom-left */
-			1.0f, -1.0f, 1.0f, 0.0f, -1.0f, 0.0f, 1.0f, 0.0f, /* bottom-left */
-			-1.0f, -1.0f, 1.0f, 0.0f, -1.0f, 0.0f, 0.0f, 0.0f, /* bottom-right */
-			-1.0f, -1.0f, -1.0f, 0.0f, -1.0f, 0.0f, 0.0f, 1.0f, /* top-right */
-			/* top face */
-			-1.0f, 1.0f, -1.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, /* top-left */
-			1.0f, 1.0f, 1.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f, /* bottom-right */
-			1.0f, 1.0f, -1.0f, 0.0f, 1.0f, 0.0f, 1.0f, 1.0f, /* top-right */
-			1.0f, 1.0f, 1.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f, /* bottom-right */
-			-1.0f, 1.0f, -1.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, /* top-left */
-			-1.0f, 1.0f, 1.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f /* bottom-left */
+		/* positions */
+		glm::vec3 pos1(-1.0f, 1.0f, 0.0f);
+
+		glm::vec3 pos2(-1.0f, -1.0f, 0.0f);
+
+		glm::vec3 pos3(1.0f, -1.0f, 0.0f);
+
+		glm::vec3 pos4(1.0f, 1.0f, 0.0f);
+
+		/* texture coordinates */
+		glm::vec2 uv1(0.0f, 1.0f);
+
+		glm::vec2 uv2(0.0f, 0.0f);
+
+		glm::vec2 uv3(1.0f, 0.0f);
+
+		glm::vec2 uv4(1.0f, 1.0f);
+
+		/* normal vector */
+		glm::vec3 nm(0.0f, 0.0f, 1.0f);
+
+		/* calculate tangent/bitangent vectors of both triangles */
+		glm::vec3 tangent1, bitangent1;
+
+		glm::vec3 tangent2, bitangent2;
+
+		/* triangle 1 */
+		// ------------------------------
+		auto edge1 = pos2 - pos1;
+
+		auto edge2 = pos3 - pos1;
+
+		auto deltaUV1 = uv2 - uv1;
+
+		auto deltaUV2 = uv3 - uv1;
+
+		auto f = 1.f / (deltaUV1.x * deltaUV2.y - deltaUV2.x * deltaUV1.y);
+
+		tangent1.x = f * (deltaUV2.y * edge1.x - deltaUV1.y * edge2.x);
+
+		tangent1.y = f * (deltaUV2.y * edge1.y - deltaUV1.y * edge2.y);
+
+		tangent1.z = f * (deltaUV2.y * edge1.z - deltaUV1.y * edge2.z);
+
+		tangent1 = normalize(tangent1);
+
+		bitangent1.x = f * (-deltaUV2.x * edge1.x + deltaUV1.x * edge2.x);
+		bitangent1.y = f * (-deltaUV2.x * edge1.y + deltaUV1.x * edge2.y);
+		bitangent1.z = f * (-deltaUV2.x * edge1.z + deltaUV1.x * edge2.z);
+
+		bitangent1 = normalize(bitangent1);
+
+		/* triangle 2 */
+		// ------------------------------
+		edge1 = pos3 - pos1;
+
+		edge2 = pos4 - pos1;
+
+		deltaUV1 = uv3 - uv1;
+
+		deltaUV2 = uv4 - uv1;
+
+		f = 1.f / (deltaUV1.x * deltaUV2.y - deltaUV2.x * deltaUV1.y);
+
+		tangent2.x = f * (deltaUV2.y * edge1.x - deltaUV1.y * edge2.x);
+
+		tangent2.y = f * (deltaUV2.y * edge1.y - deltaUV1.y * edge2.y);
+
+		tangent2.z = f * (deltaUV2.y * edge1.z - deltaUV1.y * edge2.z);
+
+		tangent2 = normalize(tangent2);
+
+		bitangent2.x = f * (-deltaUV2.x * edge1.x + deltaUV1.x * edge2.x);
+
+		bitangent2.y = f * (-deltaUV2.x * edge1.y + deltaUV1.x * edge2.y);
+
+		bitangent2.z = f * (-deltaUV2.x * edge1.z + deltaUV1.x * edge2.z);
+
+		bitangent2 = normalize(bitangent2);
+
+		float quadVertices[] = {
+			/* positions */ /* normal */ /* texcoords */ /* tangent */ /* bitangent */
+			pos1.x, pos1.y, pos1.z, nm.x, nm.y, nm.z, uv1.x, uv1.y, tangent1.x, tangent1.y, tangent1.z, bitangent1.x,
+			bitangent1.y, bitangent1.z,
+			pos2.x, pos2.y, pos2.z, nm.x, nm.y, nm.z, uv2.x, uv2.y, tangent1.x, tangent1.y, tangent1.z, bitangent1.x,
+			bitangent1.y, bitangent1.z,
+			pos3.x, pos3.y, pos3.z, nm.x, nm.y, nm.z, uv3.x, uv3.y, tangent1.x, tangent1.y, tangent1.z, bitangent1.x,
+			bitangent1.y, bitangent1.z,
+
+			pos1.x, pos1.y, pos1.z, nm.x, nm.y, nm.z, uv1.x, uv1.y, tangent2.x, tangent2.y, tangent2.z, bitangent2.x,
+			bitangent2.y, bitangent2.z,
+			pos3.x, pos3.y, pos3.z, nm.x, nm.y, nm.z, uv3.x, uv3.y, tangent2.x, tangent2.y, tangent2.z, bitangent2.x,
+			bitangent2.y, bitangent2.z,
+			pos4.x, pos4.y, pos4.z, nm.x, nm.y, nm.z, uv4.x, uv4.y, tangent2.x, tangent2.y, tangent2.z, bitangent2.x,
+			bitangent2.y, bitangent2.z
 		};
 
-		glGenVertexArrays(1, &cubeVAO);
+		/* configure plane VAO */
 
-		glGenBuffers(1, &cubeVBO);
+		glGenVertexArrays(1, &quadVAO);
 
-		/* fill buffer */
-		glBindBuffer(GL_ARRAY_BUFFER, cubeVBO);
+		glGenBuffers(1, &quadVBO);
 
-		glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+		glBindVertexArray(quadVAO);
 
-		/* link vertex attributes */
-		glBindVertexArray(cubeVAO);
+		glBindBuffer(GL_ARRAY_BUFFER, quadVBO);
+
+		glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertices), &quadVertices, GL_STATIC_DRAW);
 
 		glEnableVertexAttribArray(0);
 
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), static_cast<void*>(nullptr));
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 14 * sizeof(float), static_cast<void*>(nullptr));
 
 		glEnableVertexAttribArray(1);
 
-		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), reinterpret_cast<void*>(3 * sizeof(float)));
+		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 14 * sizeof(float), reinterpret_cast<void*>(3 * sizeof(float)));
 
 		glEnableVertexAttribArray(2);
 
-		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), reinterpret_cast<void*>(6 * sizeof(float)));
+		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 14 * sizeof(float), reinterpret_cast<void*>(6 * sizeof(float)));
 
-		glBindBuffer(GL_ARRAY_BUFFER, 0);
+		glEnableVertexAttribArray(3);
 
-		glBindVertexArray(0);
+		glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, 14 * sizeof(float), reinterpret_cast<void*>(8 * sizeof(float)));
+
+		glEnableVertexAttribArray(4);
+
+		glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, 14 * sizeof(float), (void*)(11 * sizeof(float)));
 	}
 
-	/* render Cube */
-	glBindVertexArray(cubeVAO);
+	glBindVertexArray(quadVAO);
 
-	glDrawArrays(GL_TRIANGLES, 0, 36);
+	glDrawArrays(GL_TRIANGLES, 0, 6);
 
 	glBindVertexArray(0);
 }

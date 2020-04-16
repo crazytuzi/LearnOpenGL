@@ -331,6 +331,12 @@
     <None Include="Shaders\3.2.2.point_shadows.fs">
       <Filter>Resource Files\Shaders</Filter>
     </None>
+    <None Include="Shaders\4.normal_mapping.fs">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="Shaders\4.normal_mapping.vs">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Images\wall.jpg">
@@ -508,6 +514,12 @@
       <Filter>Resource Files\Objects\planet</Filter>
     </Image>
     <Image Include="Textures\wood.png">
+      <Filter>Resource Files\Textures</Filter>
+    </Image>
+    <Image Include="Textures\brickwall.jpg">
+      <Filter>Resource Files\Textures</Filter>
+    </Image>
+    <Image Include="Textures\brickwall_normal.jpg">
       <Filter>Resource Files\Textures</Filter>
     </Image>
   </ItemGroup>

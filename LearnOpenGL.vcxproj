@@ -215,6 +215,8 @@
     <None Include="Shaders\3.2.2.point_shadows.fs" />
     <None Include="Shaders\3.3.shader.fs" />
     <None Include="Shaders\3.3.shader.vs" />
+    <None Include="Shaders\4.normal_mapping.fs" />
+    <None Include="Shaders\4.normal_mapping.vs" />
     <None Include="Shaders\5.1.framebuffers.fs" />
     <None Include="Shaders\5.1.framebuffers.vs" />
     <None Include="Shaders\5.1.framebuffers_screen.fs" />
@@ -295,6 +297,8 @@
     <Image Include="Objects\rock\Rock-Texture-Surface.jpg" />
     <Image Include="Textures\awesomeface.png" />
     <Image Include="Textures\blending_transparent_window.png" />
+    <Image Include="Textures\brickwall.jpg" />
+    <Image Include="Textures\brickwall_normal.jpg" />
     <Image Include="Textures\container2.png" />
     <Image Include="Textures\container2_specular.png" />
     <Image Include="Textures\grass.png" />

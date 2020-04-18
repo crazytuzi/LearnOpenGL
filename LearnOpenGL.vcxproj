@@ -221,6 +221,8 @@
     <None Include="Shaders\5.1.framebuffers.vs" />
     <None Include="Shaders\5.1.framebuffers_screen.fs" />
     <None Include="Shaders\5.1.framebuffers_screen.vs" />
+    <None Include="Shaders\5.1.parallax_mapping.fs" />
+    <None Include="Shaders\5.1.parallax_mapping.vs" />
     <None Include="Shaders\6.1.cubemaps.fs" />
     <None Include="Shaders\6.1.cubemaps.vs" />
     <None Include="Shaders\6.1.skybox.fs" />
@@ -297,6 +299,9 @@
     <Image Include="Objects\rock\Rock-Texture-Surface.jpg" />
     <Image Include="Textures\awesomeface.png" />
     <Image Include="Textures\blending_transparent_window.png" />
+    <Image Include="Textures\bricks2.jpg" />
+    <Image Include="Textures\bricks2_disp.jpg" />
+    <Image Include="Textures\bricks2_normal.jpg" />
     <Image Include="Textures\brickwall.jpg" />
     <Image Include="Textures\brickwall_normal.jpg" />
     <Image Include="Textures\container2.png" />

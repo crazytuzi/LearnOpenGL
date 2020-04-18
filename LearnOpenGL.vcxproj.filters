@@ -337,6 +337,12 @@
     <None Include="Shaders\4.normal_mapping.vs">
       <Filter>Resource Files\Shaders</Filter>
     </None>
+    <None Include="Shaders\5.1.parallax_mapping.fs">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="Shaders\5.1.parallax_mapping.vs">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Images\wall.jpg">
@@ -520,6 +526,15 @@
       <Filter>Resource Files\Textures</Filter>
     </Image>
     <Image Include="Textures\brickwall_normal.jpg">
+      <Filter>Resource Files\Textures</Filter>
+    </Image>
+    <Image Include="Textures\bricks2.jpg">
+      <Filter>Resource Files\Textures</Filter>
+    </Image>
+    <Image Include="Textures\bricks2_disp.jpg">
+      <Filter>Resource Files\Textures</Filter>
+    </Image>
+    <Image Include="Textures\bricks2_normal.jpg">
       <Filter>Resource Files\Textures</Filter>
     </Image>
   </ItemGroup>

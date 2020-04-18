@@ -32,6 +32,8 @@ const auto scr_width = 1280;
 
 const auto scr_height = 720;
 
+auto heightScale = 0.1f;
+
 /* camera */
 Camera camera(glm::vec3(0.f, 0.f, 3.f));
 
@@ -95,17 +97,17 @@ int main()
 	// ------------------------------
 	glEnable(GL_DEPTH_TEST);
 
-	glEnable(GL_CULL_FACE);
-
 	/* build and compile our shader program */
 	// ------------------------------
-	const Shader shader("Shaders/4.normal_mapping.vs", "Shaders/4.normal_mapping.fs");
+	const Shader shader("Shaders/5.1.parallax_mapping.vs", "Shaders/5.1.parallax_mapping.fs");
 
 	/* load textures */
 	// ------------------------------
-	const auto diffuseMap = loadTexture("Textures/brickwall.jpg");
+	const auto diffuseMap = loadTexture("Textures/bricks2.jpg");
 
-	const auto normalMap = loadTexture("Textures/brickwall_normal.jpg");
+	const auto normalMap = loadTexture("Textures/bricks2_normal.jpg");
+
+	const auto heightMap = loadTexture("Textures/bricks2_disp.jpg");
 
 	/* shader configuration */
 	// ------------------------------
@@ -115,9 +117,11 @@ int main()
 
 	shader.setInt("normalMap", 1);
 
+	shader.setInt("depthMap", 2);
+
 	/* lighting info */
 	// ------------------------------
-	glm::vec3 lightPos(0.5f, 1.f, 0.3f);
+	const glm::vec3 lightPos(0.5f, 1.f, 0.3f);
 
 	/* render loop */
 	// ------------------------------
@@ -152,9 +156,10 @@ int main()
 
 		shader.setMat4("view", view);
 
-		/* render normal-mapped quad */
+		/* render parallax-mapped quad */
 		auto model = glm::mat4(1.f);
 
+		/* rotate the quad to show parallax mapping from multiple directions */
 		model = rotate(model, glm::radians(static_cast<float>(glfwGetTime()) * -10.f),
 		               normalize(glm::vec3(1.f, 0.f, 1.f)));
 
@@ -164,6 +169,8 @@ int main()
 
 		shader.setVec3("lightPos", lightPos);
 
+		shader.setFloat("heightScale", heightScale);
+
 		glActiveTexture(GL_TEXTURE0);
 
 		glBindTexture(GL_TEXTURE_2D, diffuseMap);
@@ -171,6 +178,10 @@ int main()
 		glActiveTexture(GL_TEXTURE1);
 
 		glBindTexture(GL_TEXTURE_2D, normalMap);
+
+		glActiveTexture(GL_TEXTURE2);
+
+		glBindTexture(GL_TEXTURE_2D, heightMap);
 
 		renderQuad();
 
@@ -229,6 +240,29 @@ void process_input(GLFWwindow* window)
 	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
 	{
 		camera.ProcessKeyboard(Camera_Movement::RIGHT, deltaTime);
+	}
+
+	if (glfwGetKey(window,GLFW_KEY_Q) == GLFW_PRESS)
+	{
+		if (heightScale > 0.f)
+		{
+			heightScale -= 0.0005f;
+		}
+		else
+		{
+			heightScale = 0.f;
+		}
+	}
+	else if (glfwGetKey(window,GLFW_KEY_E) == GLFW_PRESS)
+	{
+		if (heightScale < 1.f)
+		{
+			heightScale += 0.0005f;
+		}
+		else
+		{
+			heightScale = 1.f;
+		}
 	}
 }
 

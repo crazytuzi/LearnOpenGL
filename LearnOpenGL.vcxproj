@@ -223,6 +223,7 @@
     <None Include="Shaders\5.1.framebuffers_screen.vs" />
     <None Include="Shaders\5.1.parallax_mapping.fs" />
     <None Include="Shaders\5.1.parallax_mapping.vs" />
+    <None Include="Shaders\5.2.parallax_mapping.fs" />
     <None Include="Shaders\6.1.cubemaps.fs" />
     <None Include="Shaders\6.1.cubemaps.vs" />
     <None Include="Shaders\6.1.skybox.fs" />

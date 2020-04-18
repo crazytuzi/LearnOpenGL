@@ -99,7 +99,7 @@ int main()
 
 	/* build and compile our shader program */
 	// ------------------------------
-	const Shader shader("Shaders/5.1.parallax_mapping.vs", "Shaders/5.1.parallax_mapping.fs");
+	const Shader shader("Shaders/5.1.parallax_mapping.vs", "Shaders/5.2.parallax_mapping.fs");
 
 	/* load textures */
 	// ------------------------------

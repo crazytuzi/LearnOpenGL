@@ -239,6 +239,13 @@
     <None Include="Shaders\6.hdr.vs" />
     <None Include="Shaders\6.lighting.fs" />
     <None Include="Shaders\6.lighting.vs" />
+    <None Include="Shaders\7.bloom.fs" />
+    <None Include="Shaders\7.bloom.vs" />
+    <None Include="Shaders\7.bloom_final.fs" />
+    <None Include="Shaders\7.bloom_final.vs" />
+    <None Include="Shaders\7.blur.fs" />
+    <None Include="Shaders\7.blur.vs" />
+    <None Include="Shaders\7.light_box.fs" />
     <None Include="Shaders\8.advanced_glsl.vs" />
     <None Include="Shaders\8.blue.fs" />
     <None Include="Shaders\8.green.fs" />

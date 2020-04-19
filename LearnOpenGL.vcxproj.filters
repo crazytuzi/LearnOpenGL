@@ -349,6 +349,18 @@
     <None Include="Shaders\5.3.parallax_mapping.fs">
       <Filter>Resource Files\Shaders</Filter>
     </None>
+    <None Include="Shaders\6.hdr.fs">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="Shaders\6.hdr.vs">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="Shaders\6.lighting.fs">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="Shaders\6.lighting.vs">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Images\wall.jpg">

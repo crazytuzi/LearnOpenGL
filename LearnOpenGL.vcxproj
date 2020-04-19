@@ -235,6 +235,10 @@
     <None Include="Shaders\6.3.cubemaps.vs" />
     <None Include="Shaders\6.4.model.fs" />
     <None Include="Shaders\6.4.model.vs" />
+    <None Include="Shaders\6.hdr.fs" />
+    <None Include="Shaders\6.hdr.vs" />
+    <None Include="Shaders\6.lighting.fs" />
+    <None Include="Shaders\6.lighting.vs" />
     <None Include="Shaders\8.advanced_glsl.vs" />
     <None Include="Shaders\8.blue.fs" />
     <None Include="Shaders\8.green.fs" />

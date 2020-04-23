@@ -382,6 +382,24 @@
     <None Include="Shaders\7.light_box.fs">
       <Filter>Resource Files\Shaders</Filter>
     </None>
+    <None Include="Shaders\8.1.deferred_light_box.fs">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="Shaders\8.1.deferred_light_box.vs">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="Shaders\8.1.deferred_shading.fs">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="Shaders\8.1.deferred_shading.vs">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="Shaders\8.1.g_buffer.fs">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="Shaders\8.1.g_buffer.vs">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Images\wall.jpg">

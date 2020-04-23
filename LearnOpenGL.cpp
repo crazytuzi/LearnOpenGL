@@ -99,11 +99,11 @@ int main()
 
 	/* build and compile our shader program */
 	// ------------------------------
-	const Shader shaderGeometryPass("Shaders/8.1.g_buffer.vs", "Shaders/8.1.g_buffer.fs");
+	const Shader shaderGeometryPass("Shaders/8.2.g_buffer.vs", "Shaders/8.2.g_buffer.fs");
 
-	const Shader shaderLightingPass("Shaders/8.1.deferred_shading.vs", "Shaders/8.1.deferred_shading.fs");
+	const Shader shaderLightingPass("Shaders/8.2.deferred_shading.vs", "Shaders/8.2.deferred_shading.fs");
 
-	const Shader shaderLightBox("Shaders/8.1.deferred_light_box.vs", "Shaders/8.1.deferred_light_box.fs");
+	const Shader shaderLightBox("Shaders/8.2.deferred_light_box.vs", "Shaders/8.2.deferred_light_box.fs");
 
 	/* load models */
 	// ------------------------------
@@ -327,13 +327,24 @@ int main()
 			shaderLightingPass.setVec3("lights[" + std::to_string(i) + "].Color", lightColors[i]);
 
 			/* update attenuation parameters and calculate radius */
-			const float linear = 0.7;
+			/* note that we don't send this to the shader, we assume it is always 1.0 (in our case) */
+			const auto constant = 1.0f;
 
-			const float quadratic = 1.8;
+			const auto linear = 0.7f;
+
+			const auto quadratic = 1.8f;
 
 			shaderLightingPass.setFloat("lights[" + std::to_string(i) + "].Linear", linear);
 
 			shaderLightingPass.setFloat("lights[" + std::to_string(i) + "].Quadratic", quadratic);
+
+			/* then calculate radius of light volume/sphere */
+			const auto maxBrightness = std::fmaxf(std::fmaxf(lightColors[i].r, lightColors[i].g), lightColors[i].b);
+
+			const auto radius = (-linear + std::sqrt(
+				linear * linear - 4 * quadratic * (constant - (256.0f / 5.0f) * maxBrightness))) / (2.0f * quadratic);
+
+			shaderLightingPass.setFloat("lights[" + std::to_string(i) + "].Radius", radius);
 		}
 
 		shaderLightingPass.setVec3("viewPos", camera.Position);

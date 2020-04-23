@@ -252,6 +252,12 @@
     <None Include="Shaders\8.1.deferred_shading.vs" />
     <None Include="Shaders\8.1.g_buffer.fs" />
     <None Include="Shaders\8.1.g_buffer.vs" />
+    <None Include="Shaders\8.2.deferred_light_box.fs" />
+    <None Include="Shaders\8.2.deferred_light_box.vs" />
+    <None Include="Shaders\8.2.deferred_shading.fs" />
+    <None Include="Shaders\8.2.deferred_shading.vs" />
+    <None Include="Shaders\8.2.g_buffer.fs" />
+    <None Include="Shaders\8.2.g_buffer.vs" />
     <None Include="Shaders\8.advanced_glsl.vs" />
     <None Include="Shaders\8.blue.fs" />
     <None Include="Shaders\8.green.fs" />

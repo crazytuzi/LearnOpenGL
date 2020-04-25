@@ -274,6 +274,12 @@
     <None Include="Shaders\9.3.normal_visualization.fs" />
     <None Include="Shaders\9.3.normal_visualization.gs" />
     <None Include="Shaders\9.3.normal_visualization.vs" />
+    <None Include="Shaders\9.ssao.fs" />
+    <None Include="Shaders\9.ssao.vs" />
+    <None Include="Shaders\9.ssao_blur.fs" />
+    <None Include="Shaders\9.ssao_geometry.fs" />
+    <None Include="Shaders\9.ssao_geometry.vs" />
+    <None Include="Shaders\9.ssao_lighting.fs" />
     <None Include="Shaders\advanced.fs" />
     <None Include="Shaders\advanced.vs" />
   </ItemGroup>

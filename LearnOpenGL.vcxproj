@@ -356,6 +356,33 @@
   <ItemGroup>
     <Content Include="Shaders\1.1.pbr.fs" />
     <Content Include="Shaders\1.1.pbr.vs" />
+    <Content Include="Shaders\1.2.pbr.fs" />
+    <Content Include="Shaders\1.2.pbr.vs" />
+    <Content Include="Textures\pbr\gold\albedo.png" />
+    <Content Include="Textures\pbr\gold\ao.png" />
+    <Content Include="Textures\pbr\gold\metallic.png" />
+    <Content Include="Textures\pbr\gold\normal.png" />
+    <Content Include="Textures\pbr\gold\roughness.png" />
+    <Content Include="Textures\pbr\grass\albedo.png" />
+    <Content Include="Textures\pbr\grass\ao.png" />
+    <Content Include="Textures\pbr\grass\metallic.png" />
+    <Content Include="Textures\pbr\grass\normal.png" />
+    <Content Include="Textures\pbr\grass\roughness.png" />
+    <Content Include="Textures\pbr\plastic\albedo.png" />
+    <Content Include="Textures\pbr\plastic\ao.png" />
+    <Content Include="Textures\pbr\plastic\metallic.png" />
+    <Content Include="Textures\pbr\plastic\normal.png" />
+    <Content Include="Textures\pbr\plastic\roughness.png" />
+    <Content Include="Textures\pbr\rusted_iron\albedo.png" />
+    <Content Include="Textures\pbr\rusted_iron\ao.png" />
+    <Content Include="Textures\pbr\rusted_iron\metallic.png" />
+    <Content Include="Textures\pbr\rusted_iron\normal.png" />
+    <Content Include="Textures\pbr\rusted_iron\roughness.png" />
+    <Content Include="Textures\pbr\wall\albedo.png" />
+    <Content Include="Textures\pbr\wall\ao.png" />
+    <Content Include="Textures\pbr\wall\metallic.png" />
+    <Content Include="Textures\pbr\wall\normal.png" />
+    <Content Include="Textures\pbr\wall\roughness.png" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -27,10 +27,6 @@ unsigned int loadCubemap(const std::vector<std::string>& faces);
 
 void renderSphere();
 
-void renderQuad();
-
-void renderCube();
-
 /* settings */
 const auto scr_width = 1280;
 
@@ -103,28 +99,40 @@ int main()
 
     /* build and compile our shader program */
     // ------------------------------
-    const Shader shader("Shaders/1.1.pbr.vs", "Shaders/1.1.pbr.fs");
+    const Shader shader("Shaders/1.2.pbr.vs", "Shaders/1.2.pbr.fs");
 
     shader.use();
 
-    shader.setVec3("albedo", 0.5f, 0.f, 0.f);
+    shader.setInt("albedoMap", 0);
 
-    shader.setFloat("ao", 1.f);
+    shader.setInt("normalMap", 1);
+
+    shader.setInt("metallicMap", 2);
+
+    shader.setInt("roughnessMap", 3);
+
+    shader.setInt("aoMap", 4);
+
+    /* load PBR material textures */
+    // ------------------------------
+    const auto albedo = loadTexture("Textures/pbr/rusted_iron/albedo.png");
+
+    const auto normal = loadTexture("Textures/pbr/rusted_iron/normal.png");
+
+    const auto metallic = loadTexture("Textures/pbr/rusted_iron/metallic.png");
+
+    const auto roughness = loadTexture("Textures/pbr/rusted_iron/roughness.png");
+
+    const auto ao = loadTexture("Textures/pbr/rusted_iron/ao.png");
 
     /* lights */
     // ------------------------------
     glm::vec3 lightPositions[] = {
-        glm::vec3(-10.f, 10.f, 10.f),
-        glm::vec3(10.f, 10.f, 10.f),
-        glm::vec3(-10.f, -10.f, 10.f),
-        glm::vec3(10.f, -10.f, 10.f),
+        glm::vec3(0.f, 0.f, 10.f)
     };
 
     glm::vec3 lightColors[] = {
-        glm::vec3(300.f, 300.f, 300.f),
-        glm::vec3(300.f, 300.f, 300.f),
-        glm::vec3(300.f, 300.f, 300.f),
-        glm::vec3(300.f, 300.f, 300.f)
+        glm::vec3(150.f, 150.f, 150.f)
     };
 
     const auto nrRows = 7;
@@ -172,19 +180,33 @@ int main()
 
         shader.setVec3("cameraPos", camera.Position);
 
+        glActiveTexture(GL_TEXTURE0);
+
+        glBindTexture(GL_TEXTURE_2D, albedo);
+
+        glActiveTexture(GL_TEXTURE1);
+
+        glBindTexture(GL_TEXTURE_2D, normal);
+
+        glActiveTexture(GL_TEXTURE2);
+
+        glBindTexture(GL_TEXTURE_2D, metallic);
+
+        glActiveTexture(GL_TEXTURE3);
+
+        glBindTexture(GL_TEXTURE_2D, roughness);
+
+        glActiveTexture(GL_TEXTURE4);
+
+        glBindTexture(GL_TEXTURE_2D, ao);
+
         /* render rows*column number of spheres with varying metallic/roughness values scaled by rows and columns respectively */
         auto model = glm::mat4(1.f);
 
         for (auto row = 0; row < nrRows; ++row)
         {
-            shader.setFloat("metallic", static_cast<float>(row) / nrRows);
-
             for (auto col = 0; col < nrColumns; ++col)
             {
-                /* we clamp the roughness to 0.025 - 1.0 as perfectly smooth surfaces (roughness of 0.0) tend to look a bit off */
-                /* on direct lighting. */
-                shader.setFloat("roughness", glm::clamp(static_cast<float>(col) / nrColumns, 0.05f, 1.f));
-
                 model = glm::mat4(1.f);
 
                 model = glm::translate(model, glm::vec3(
@@ -543,7 +565,7 @@ void renderSphere()
 
         glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), &indices[0],GL_STATIC_DRAW);
 
-        auto stride = (3 + 2 + 3) * sizeof(float);
+        const auto stride = (3 + 2 + 3) * sizeof(float);
 
         glEnableVertexAttribArray(0);
 

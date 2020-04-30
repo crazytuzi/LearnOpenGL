@@ -353,6 +353,10 @@
     <Text Include="Objects\nanosuit\LICENSE.txt" />
     <Text Include="Objects\nanosuit_reflection\LICENSE.txt" />
   </ItemGroup>
+  <ItemGroup>
+    <Content Include="Shaders\1.1.pbr.fs" />
+    <Content Include="Shaders\1.1.pbr.vs" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

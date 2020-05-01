@@ -364,6 +364,16 @@
     <Content Include="Shaders\2.1.1.equirectangular_to_cubemap.fs" />
     <Content Include="Shaders\2.1.1.pbr.fs" />
     <Content Include="Shaders\2.1.1.pbr.vs" />
+    <Content Include="Shaders\2.2.1.background.fs" />
+    <Content Include="Shaders\2.2.1.background.vs" />
+    <Content Include="Shaders\2.2.1.brdf.fs" />
+    <Content Include="Shaders\2.2.1.brdf.vs" />
+    <Content Include="Shaders\2.2.1.cubemap.vs" />
+    <Content Include="Shaders\2.2.1.equirectangular_to_cubemap.fs" />
+    <Content Include="Shaders\2.2.1.irradiance_convolution.fs" />
+    <Content Include="Shaders\2.2.1.pbr.fs" />
+    <Content Include="Shaders\2.2.1.pbr.vs" />
+    <Content Include="Shaders\2.2.1.prefilter.fs" />
     <Content Include="Textures\hdr\newport_loft.hdr" />
     <Content Include="Textures\pbr\gold\albedo.png" />
     <Content Include="Textures\pbr\gold\ao.png" />

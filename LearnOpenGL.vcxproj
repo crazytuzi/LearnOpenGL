@@ -364,6 +364,13 @@
     <Content Include="Shaders\2.1.1.equirectangular_to_cubemap.fs" />
     <Content Include="Shaders\2.1.1.pbr.fs" />
     <Content Include="Shaders\2.1.1.pbr.vs" />
+    <Content Include="Shaders\2.1.2.background.fs" />
+    <Content Include="Shaders\2.1.2.background.vs" />
+    <Content Include="Shaders\2.1.2.cubemap.vs" />
+    <Content Include="Shaders\2.1.2.equirectangular_to_cubemap.fs" />
+    <Content Include="Shaders\2.1.2.irradiance_convolution.fs" />
+    <Content Include="Shaders\2.1.2.pbr.fs" />
+    <Content Include="Shaders\2.1.2.pbr.vs" />
     <Content Include="Shaders\2.2.1.background.fs" />
     <Content Include="Shaders\2.2.1.background.vs" />
     <Content Include="Shaders\2.2.1.brdf.fs" />

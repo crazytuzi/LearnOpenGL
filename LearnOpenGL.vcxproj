@@ -358,6 +358,13 @@
     <Content Include="Shaders\1.1.pbr.vs" />
     <Content Include="Shaders\1.2.pbr.fs" />
     <Content Include="Shaders\1.2.pbr.vs" />
+    <Content Include="Shaders\2.1.1.background.fs" />
+    <Content Include="Shaders\2.1.1.background.vs" />
+    <Content Include="Shaders\2.1.1.cubemap.vs" />
+    <Content Include="Shaders\2.1.1.equirectangular_to_cubemap.fs" />
+    <Content Include="Shaders\2.1.1.pbr.fs" />
+    <Content Include="Shaders\2.1.1.pbr.vs" />
+    <Content Include="Textures\hdr\newport_loft.hdr" />
     <Content Include="Textures\pbr\gold\albedo.png" />
     <Content Include="Textures\pbr\gold\ao.png" />
     <Content Include="Textures\pbr\gold\metallic.png" />

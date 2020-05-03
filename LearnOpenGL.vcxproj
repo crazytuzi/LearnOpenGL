@@ -110,7 +110,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>opengl32.lib;glfw3.lib;assimp.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>opengl32.lib;glfw3.lib;assimp.lib;freetyped.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -354,6 +354,7 @@
     <Text Include="Objects\nanosuit_reflection\LICENSE.txt" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Fonts\arial.ttf" />
     <Content Include="Shaders\1.1.pbr.fs" />
     <Content Include="Shaders\1.1.pbr.vs" />
     <Content Include="Shaders\1.2.pbr.fs" />
@@ -391,6 +392,8 @@
     <Content Include="Shaders\2.2.2.pbr.fs" />
     <Content Include="Shaders\2.2.2.pbr.vs" />
     <Content Include="Shaders\2.2.2.prefilter.fs" />
+    <Content Include="Shaders\text.fs" />
+    <Content Include="Shaders\text.vs" />
     <Content Include="Textures\hdr\newport_loft.hdr" />
     <Content Include="Textures\pbr\gold\albedo.png" />
     <Content Include="Textures\pbr\gold\ao.png" />

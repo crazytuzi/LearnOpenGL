@@ -13,6 +13,10 @@
 #include "Camera.h"
 #include "Model.h"
 
+GLenum glCheckError_(const char* file, const int line);
+
+#define glCheckError() glCheckError_(__FILE__,__LINE__);
+
 void frame_buffer_size_callback(GLFWwindow* window, int width, int height);
 
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
@@ -772,6 +776,40 @@ int main()
     glfwTerminate();
 
     return 0;
+}
+
+GLenum glCheckError_(const char* file, const int line)
+{
+    GLenum errorCode;
+
+    while ((errorCode = glGetError()) != GL_NO_ERROR)
+    {
+        std::string error;
+
+        switch (errorCode)
+        {
+        case GL_INVALID_ENUM: error = "INVALID_ENUM";
+            break;
+
+        case GL_INVALID_VALUE: error = "INVALID_VALUE";
+            break;
+
+        case GL_INVALID_OPERATION: error = "INVALID_OPERATION";
+            break;
+
+        case GL_OUT_OF_MEMORY: error = "OUT_OF_MEMORY";
+            break;
+
+        case GL_INVALID_FRAMEBUFFER_OPERATION: error = "INVALID_FRAMEBUFFER_OPERATION";
+            break;
+
+        default: ;
+        }
+
+        std::cout << error << " | " << file << " (" << line << ")" << std::endl;
+    }
+
+    return errorCode;
 }
 
 /* process all input: query GLFW whether relevant keys are pressed/released this frame and react accordingly */
